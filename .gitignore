@@ -4,9 +4,9 @@
 
 # divers
 old/
-doc/
 shot/
 video/
+langage_semaphore/
 
 # Python test
 *_old.py
