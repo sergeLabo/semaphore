@@ -83,7 +83,7 @@ def set_video():
     print('gl.my_video =', gl.my_video)
 
     # define a source of image for the texture, here a movie
-    movie = gl.expandPath('./scripts/video/NOTHING TO HIDE.mp4')
+    movie = gl.expandPath('./scripts/video/' + gl.conf['modifiable']['film'])
     print('Movie =', movie)
     
     gl.my_video.source = texture.VideoFFmpeg(movie)
