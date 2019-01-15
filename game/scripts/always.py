@@ -24,6 +24,7 @@ from time import sleep
 import math
 from bge import logic as gl
 from bge import render
+
 from scripts.key_capture import keys
 
 """
@@ -40,11 +41,11 @@ def main():
     keys()
     
     # Les différentes phases du jeu
-    if gl.tempoDict['shot'].tempo == 1:
+    if gl.tempoDict['shot'].tempo == gl.chars_change:
         gl.chars = get_chars()
         display(gl.chars)
         
-    if gl.tempoDict['shot'].tempo == 3:
+    if gl.tempoDict['shot'].tempo == gl.make_shot:
         make_shot()
 
     # Avance de la video
@@ -52,7 +53,7 @@ def main():
     end()
 
 def end():
-    if gl.numero == 60001:
+    if gl.numero == gl.nombre_shot_total:
         gl.endGame()
     
 def video_refresh():
@@ -90,8 +91,26 @@ def get_chars():
     
 def make_shot():
     
-    gl.name_file_shot = gl.shot_directory + '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
-                        
-    render.makeScreenshot(gl.name_file_shot)
-    print(gl.chars, '--> shot ' + str(gl.numero))
+    
+    name_file_shot = get_name_file_shot()
+    print(gl.name_file_shot)
+    render.makeScreenshot(name_file_shot)
+    
+    #print(gl.chars, '--> shot ' + str(gl.numero))
     gl.numero += 1
+
+def get_name_file_shot():
+    """/media/data/3D/projets/semaphore/game/shot/shot_0/shot_a_0.png
+    60000
+    4000
+    je suis à gl.numero = 5555
+    numero du dossier = n = 1 = int(5555/4000)
+
+    """
+
+    n = int(gl.numero / gl.nombre_de_fichiers_par_dossier)
+    
+    gl.name_file_shot = gl.shot_directory + '/shot_' + str(n).zfill(3) +\
+                        '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
+
+    return gl.name_file_shot

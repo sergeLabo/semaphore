@@ -28,8 +28,7 @@ from bge import logic as gl
 from bge import texture
 from pymultilame import blendergetobject
 
-from pymultilame import Tempo
-from pymultilame import MyConfig
+from pymultilame import Tempo, MyConfig, MyTools
 
 from scripts.get_texte import get_text_str_from_blender
 from scripts.angleSemaphore import lettre_table
@@ -50,26 +49,65 @@ def get_conf():
     print(gl.conf, "\n")
 
 def set_variable():
+    # Numero de shot de 0 à infini
     gl.numero = 0
+
+    # Numéro du cycle de lecture des textes
+    gl.cycle = 0
+
+    # nombre de shot total
+    gl.nombre_shot_total = gl.conf['modifiable']['nombre_shot_total']
     
-    # Nom du fichier
+    # Nom du fichier: les dossiers changent mais les indices continuent
     gl.name_file_shot = gl.current_dir + 'shot/shot_' + str(gl.numero) + '.png'
 
     # conversion lettre vers angle
     gl.lettre_table = lettre_table
 
-    gl.shot_directory = gl.conf['modifiable']['path'] 
+    # Dossier d'enregistrement des images
+    gl.shot_directory = gl.conf['modifiable']['path']
+
+    # Nombre d'images par dossier
+    gl.nombre_de_fichiers_par_dossier = gl.conf['modifiable']['nombre_de_fichiers_par_dossier']
+
+    # Numéro de frame dans le cycle de chaque lettre
+    gl.chars_change = gl.conf['modifiable']['chars_change']
+
+    # Numéro de frame dans le cycle de chaque lettre 
+    gl.make_shot = gl.conf['modifiable']['make_shot']
+
+def create_directories():
+    
+    mt = MyTools()
+    
+    # Création du dossier shot
+    mt.create_directory(gl.current_dir + 'shot')
+    
+    # Nombre de dossiers nécessaires
+    n = int(gl.nombre_shot_total / gl.nombre_de_fichiers_par_dossier)
+
+    # Création de n dossiers
+    # /media/data/3D/projets/semaphore/game/shot/shot_0/shot_a_0.png
+    
+    for i in range(n):
+        directory = gl.shot_directory + '/shot_' + str(i).zfill(3)
+        mt.create_directory(directory)
     
 def set_tempo():
     tempo_liste = [("shot", int(gl.conf['modifiable']['shot_every']))]
 
+    # Comptage des frames par lettre
     gl.tempoDict = Tempo(tempo_liste)
 
 def get_texte():
     # Récup des textes du dossier texte
     dossier = gl.current_dir + 'scripts/texte/'
+
+    # Le texte à lire
     gl.text_str = get_text_str_from_blender(dossier)
     print('Longueur du texte =', len(gl.text_str))
+
+    # L'indice de la lettre à lire
     gl.lettre = 0
 
 def set_video():
@@ -120,6 +158,7 @@ def main():
     get_texte()
     get_semaphore_objet()
     set_video()
+    create_directories()
     
     # Pour les mondoshawan
     print("OK once.py")
