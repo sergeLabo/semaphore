@@ -22,6 +22,8 @@ Lancé à chaque frame durant tout le jeu.
 
 from time import sleep
 import math
+from random import uniform
+
 from bge import logic as gl
 from bge import render
 
@@ -34,16 +36,19 @@ own.localOrientation = xyz.to_matrix()
 """
 
 def main():
-    # Toujours partout
-    gl.tempoDict.update()
-    
     # Capture du clavier
     keys()
+
+    # glissement permanent du socle
+    glissement_socle()
+
+    #print(gl.tempoDict['shot'].tempo , gl.chars)
     
     # Les différentes phases du jeu
     if gl.tempoDict['shot'].tempo == gl.chars_change:
         gl.chars = get_chars()
         display(gl.chars)
+        #change_socle_position()
         
     if gl.tempoDict['shot'].tempo == gl.make_shot:
         make_shot()
@@ -51,6 +56,40 @@ def main():
     # Avance de la video
     video_refresh()
     end()
+
+    # Toujours partout, tempo 'shot' commence à 0
+    gl.tempoDict.update()
+    
+def glissement_socle():
+
+    k = 0.08
+    
+    gl.x += gl.sensx * k
+    if gl.x < -5 or gl.x > 5:
+        gl.sensx = -gl.sensx
+         
+    gl.y += gl.sensy * k
+    if gl.y < -5 or gl.y > 100:
+        gl.sensy = -gl.sensy
+    
+    gl.z += gl.sensz * k
+    if gl.z < -2 or gl.z > 5:
+        gl.sensz = -gl.sensx
+
+    gl.socle.worldPosition[0] = gl.x
+    gl.socle.worldPosition[1] = gl.y
+    gl.socle.worldPosition[2] = gl.z
+    
+def change_socle_position():
+    """socle position au centre = 0, 0, -6"""
+
+    x = uniform(-10, 10)
+    y = uniform(-5, 50)
+    z = uniform(-4, 10)
+
+    gl.socle.worldPosition[0] = x
+    gl.socle.worldPosition[1] = y
+    gl.socle.worldPosition[2] = z
 
 def end():
     if gl.numero == gl.nombre_shot_total:

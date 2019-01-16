@@ -24,6 +24,9 @@ Seuls les attributs de logic sont stockés en permanence.
 """
 
 
+import os
+from time import sleep
+
 from bge import logic as gl
 from bge import texture
 from pymultilame import blendergetobject
@@ -71,23 +74,45 @@ def set_variable():
     gl.nombre_de_fichiers_par_dossier = gl.conf['modifiable']['nombre_de_fichiers_par_dossier']
 
     # Numéro de frame dans le cycle de chaque lettre
+    gl.chars = ""
     gl.chars_change = gl.conf['modifiable']['chars_change']
 
     # Numéro de frame dans le cycle de chaque lettre 
     gl.make_shot = gl.conf['modifiable']['make_shot']
 
-def create_directories():
+    # Position de départ du socle
+    gl.x = 0
+    gl.sensx = 1
+    gl.y = 0
+    gl.sensy = 1
+    gl.z = -6
+    gl.sensz = 1
     
-    mt = MyTools()
+def test_path_to_shot_directory():
+    if os.path.exists(gl.shot_directory) and gl.shot_directory[-4:] == "shot":
+        print()
+    else:
+        print("Le dossier /shot n'existe pas !")
+        print("Vous devez le créer et définir son chemin dans semaphore.ini")
+        print("Pas de slash à la fin de shot")
+        sleep(10)
+        os._exit(0)
     
+def create_shot_directory():
+    """Non utilisé, ce dossier doit être défini dans le *.ini"""
     # Création du dossier shot
+    mt = MyTools()
     mt.create_directory(gl.current_dir + 'shot')
+    
+def create_directories():
+    """
+    Création de n dossiers
+    /media/data/3D/projets/semaphore/game/shot/shot_0/shot_a_0.png
+    """
+    mt = MyTools()
     
     # Nombre de dossiers nécessaires
     n = int(gl.nombre_shot_total / gl.nombre_de_fichiers_par_dossier)
-
-    # Création de n dossiers
-    # /media/data/3D/projets/semaphore/game/shot/shot_0/shot_a_0.png
     
     for i in range(n):
         directory = gl.shot_directory + '/shot_' + str(i).zfill(3)
@@ -110,29 +135,40 @@ def get_texte():
     # L'indice de la lettre à lire
     gl.lettre = 0
 
+def film_error():
+    print("Une video valide doit être définie dans semaphore.ini")
+    print("Le fichier doit être dans game/scripts/video/")
+    sleep(10)
+    os._exit(0)
+        
 def set_video():
     # identify a static texture by name
     #matID = texture.materialID(gl.plane, 'IMlogo-labomedia.png')
     matID = texture.materialID(gl.plane, 'MAblack')
-    print('matID =', matID)
     
     # create a dynamic texture that will replace the static texture
     gl.my_video = texture.Texture(gl.plane, matID)
-    print('gl.my_video =', gl.my_video)
 
     # define a source of image for the texture, here a movie
-    movie = gl.expandPath('./scripts/video/' + gl.conf['modifiable']['film'])
-    print('Movie =', movie)
-    
+    try:
+        movie = gl.expandPath('./scripts/video/' + gl.conf['modifiable']['film'])
+        print('Movie =', movie)
+    except:
+        film_error()
+    try:
+        s = os.path.getsize(movie)
+        print("Taille du film:", s)
+    except:
+        film_error()
+            
     gl.my_video.source = texture.VideoFFmpeg(movie)
     gl.my_video.source.scale = False
 
     # Infinite loop
     gl.my_video.source.repeat = -1
 
-    # Une image par lettre
+    # Vitesse normale: < 1 ralenti, > 1 accélère
     gl.my_video.source.framerate = 1.0
-    #int(gl.conf['modifiable']['shot_every'])
     
     # quick off the movie, but it wont play in the background
     gl.my_video.source.play()
@@ -143,7 +179,8 @@ def get_semaphore_objet():
     gl.bras_gauche = all_obj['gauche']
     gl.bras_droit = all_obj['droit']
     gl.plane = all_obj['Plane']
-    
+    gl.socle = all_obj['socle']
+        
 def main():
     """Lancé une seule fois à la 1ère frame au début du jeu par main_once."""
 
@@ -154,11 +191,11 @@ def main():
 
     # l'ordre est important
     set_variable()
+    test_path_to_shot_directory()
+    create_directories()
     set_tempo()
     get_texte()
     get_semaphore_objet()
     set_video()
-    create_directories()
     
-    # Pour les mondoshawan
-    print("OK once.py")
+    print("Le bonjour des mondoshawan !")
