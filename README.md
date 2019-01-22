@@ -7,9 +7,8 @@ Un shot:
 
 ### 60 000 images pour créer le réseau de neuronnes
 
-Quelques images pour apprendre, en gris 40x40 floue, différentes tailles et rotation
+Quelques images pour apprendre, en gris 40x40 floue, différentes tailles et rotations
 
-![i](/doc/some_shot_NB/shot_24000_i.png =100x100)
 <img src="/doc/some_shot_NB/shot_24000_i.png" width="100" height="100">
 <img src="/doc/some_shot_NB/shot_24001_ .png" width="100" height="100">
 <img src="/doc/some_shot_NB/shot_24002_f.png" width="100" height="100">
