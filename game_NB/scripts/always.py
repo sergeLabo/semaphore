@@ -22,64 +22,40 @@ Lancé à chaque frame durant tout le jeu.
 
 from time import sleep
 import math
-from random import uniform
+from random import uniform, choice
 
 from bge import logic as gl
 from bge import render
 
-from scripts.key_capture import keys
+from scripts.key_capture import keyboard_text
 
-"""
-xyz = own.localOrientation.to_euler()
-xyz[2] = math.radians(45)
-own.localOrientation = xyz.to_matrix()
-"""
 
 def main():
     # Capture du clavier
-    keys()
+    #keyboard_text()
 
-    # glissement permanent du socle
-    glissement_socle()
-
-    #print(gl.tempoDict['shot'].tempo , gl.chars)
-    
     # Les différentes phases du jeu
     if gl.tempoDict['shot'].tempo == gl.chars_change:
         gl.chars = get_chars()
         display(gl.chars)
-        #change_socle_position()
-        
+        # glissement rotation à chaque nouveau caractère du socle
+        if not gl.static:
+            glissement_socle()
+            rotation_socle()
+
     if gl.tempoDict['shot'].tempo == gl.make_shot:
         make_shot()
 
     # Avance de la video
-    video_refresh()
+    if gl.conf['modifiable']['video']:
+        video_refresh()
+
+    # Fin du jeu à nombre_shot_total
     end()
 
     # Toujours partout, tempo 'shot' commence à 0
     gl.tempoDict.update()
-    
-def glissement_socle():
 
-    k = 0.08
-    
-    gl.x += gl.sensx * k
-    if gl.x < -5 or gl.x > 5:
-        gl.sensx = -gl.sensx
-         
-    gl.y += gl.sensy * k
-    if gl.y < -5 or gl.y > 100:
-        gl.sensy = -gl.sensy
-    
-    gl.z += gl.sensz * k
-    if gl.z < -2 or gl.z > 5:
-        gl.sensz = -gl.sensx
-
-    gl.socle.worldPosition[0] = gl.x
-    gl.socle.worldPosition[1] = gl.y
-    gl.socle.worldPosition[2] = gl.z
-    
 def change_socle_position():
     """socle position au centre = 0, 0, -6"""
 
@@ -90,6 +66,33 @@ def change_socle_position():
     gl.socle.worldPosition[0] = x
     gl.socle.worldPosition[1] = y
     gl.socle.worldPosition[2] = z
+    
+def rotation_socle():
+    angle = uniform(-gl.rotation_socle, gl.rotation_socle)
+    xyz = gl.socle.localOrientation.to_euler()
+    xyz[1] = math.radians(angle)
+    gl.socle.worldOrientation = xyz.to_matrix()
+    
+def glissement_socle():
+    """Y en random. Plus y est grand plus je me déplace sur x et z"""
+
+    # Position au hazard sur y
+    gl.y = uniform(0, 40)
+
+    # ## x et z dépendent de y
+    # si y = 0: x de -3 à 3
+    # si y = 40: x de -30 à 30
+    # coeff au pif
+    gl.x = 0.45 * gl.y * choice([-1, 1])
+        
+    # si y = 0: z de -2 à 2
+    # si y = 40: z de -30 à 30     
+    gl.z = 0.45 * gl.y * choice([-1, 1])
+
+    # J'applique
+    gl.socle.worldPosition[0] = gl.x
+    gl.socle.worldPosition[1] = gl.y
+    gl.socle.worldPosition[2] = gl.z
 
 def end():
     if gl.numero == gl.nombre_shot_total:
@@ -130,9 +133,7 @@ def get_chars():
     
 def make_shot():
     
-    
     name_file_shot = get_name_file_shot()
-    print(gl.name_file_shot)
     render.makeScreenshot(name_file_shot)
     
     #print(gl.chars, '--> shot ' + str(gl.numero))
@@ -153,3 +154,27 @@ def get_name_file_shot():
                         '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
 
     return gl.name_file_shot
+
+"""  
+bge.render.setWindowSize(width, height)
+
+    Set the width and height of the window (in pixels). This also works for fullscreen applications.
+
+    Note
+
+    Only works in the standalone player, not the Blender-embedded player.
+    Parameters:	
+
+        width (integer) – width in pixels
+        height (integer) – height in pixels
+
+bge.render.makeScreenshot(filename)
+
+    Writes an image file with the current displayed frame.
+
+    The image is written to ‘filename’. The path may be absolute (eg. /home/foo/image) or relative when started with // (eg. //image). Note that absolute paths are not portable between platforms. If the filename contains a #, it will be replaced by an incremental index so that screenshots can be taken multiple times without overwriting the previous ones (eg. image-#).
+
+    Settings for the image are taken from the render settings (file format and respective settings, gamma and colospace conversion, etc). The image resolution matches the framebuffer, meaning, the window size and aspect ratio. When running from the standalone player, instead of the embedded player, only PNG files are supported. Additional color conversions are also not supported.
+    Parameters:	filename (string) – path and name of the file to write
+
+"""

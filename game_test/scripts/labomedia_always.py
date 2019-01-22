@@ -17,21 +17,25 @@
 ########################################################################
 
 """
-Capture d'un texte au clavier
+Ne jamais modifier ce script.
+
+Les scripts:
+- labomedia_once.py
+- labomedia_always.py
+sont les seuls scripts importés directement dans Blender.
+
+Les autres scripts sont importés en temps que modules.
+
+Il est alors possible de les modifier dans un éditeur externe
+sans avoir à les recharger dans Blender.
 """
 
-from bge import logic as gl
 
-from scripts.keyboard_table import ALPHABET_KEYS
+# imports locaux
+from scripts import always
 
 
-def keys():
-    """ALPHABET_KEYS = { events.AKEY: 'A' ... """
+def main():
+    """Fonction lancée à chaque frame dans blender en temps que module."""
 
-    val = None
-    for key, val in ALPHABET_KEYS.items():
-
-        if gl.keyboard.events[key] == gl.KX_INPUT_JUST_ACTIVATED:
-            print(val)
-
-    return val
+    always.main()

@@ -29,6 +29,8 @@ from time import sleep
 
 from bge import logic as gl
 from bge import texture
+from bge import render
+
 from pymultilame import blendergetobject
 
 from pymultilame import Tempo, MyConfig, MyTools
@@ -50,6 +52,10 @@ def get_conf():
 
     print("\nConfiguration du jeu semaphore:")
     print(gl.conf, "\n")
+
+def set_image_size():
+    a = gl.conf['modifiable']['size']
+    render.setWindowSize(a, a)
 
 def set_variable():
     # Numero de shot de 0 à infini
@@ -82,11 +88,19 @@ def set_variable():
 
     # Position de départ du socle
     gl.x = 0
-    gl.sensx = 1
     gl.y = 0
-    gl.sensy = 1
-    gl.z = -6
-    gl.sensz = 1
+    gl.z = 0
+
+    # Déplacement du socle
+    gl.static = gl.conf['modifiable']['static']
+    gl.rotation_socle =gl.conf['modifiable']['rotation_socle']
+    
+def keys_init():
+    gl.one = 0
+    gl.two = 0
+    gl.enter = 0
+    gl.backspace = 0
+    gl.keyboard_text = ""
     
 def test_path_to_shot_directory():
     if os.path.exists(gl.shot_directory) and gl.shot_directory[-4:] == "shot":
@@ -97,7 +111,7 @@ def test_path_to_shot_directory():
         print("Pas de slash à la fin de shot")
         sleep(10)
         os._exit(0)
-    
+  
 def create_shot_directory():
     """Non utilisé, ce dossier doit être défini dans le *.ini"""
     # Création du dossier shot
@@ -151,16 +165,17 @@ def set_video():
 
     # define a source of image for the texture, here a movie
     try:
-        movie = gl.expandPath('./scripts/video/' + gl.conf['modifiable']['film'])
+        movie = gl.expandPath('//scripts/video/' + gl.conf['modifiable']['film'])
         print('Movie =', movie)
     except:
         film_error()
+            
     try:
         s = os.path.getsize(movie)
         print("Taille du film:", s)
     except:
         film_error()
-            
+    
     gl.my_video.source = texture.VideoFFmpeg(movie)
     gl.my_video.source.scale = False
 
@@ -178,8 +193,10 @@ def get_semaphore_objet():
     gl.bras_central = all_obj['main']
     gl.bras_gauche = all_obj['gauche']
     gl.bras_droit = all_obj['droit']
-    gl.plane = all_obj['Plane']
     gl.socle = all_obj['socle']
+
+    if gl.conf['modifiable']['video']:
+        gl.plane = all_obj['Plane']
         
 def main():
     """Lancé une seule fois à la 1ère frame au début du jeu par main_once."""
@@ -191,11 +208,16 @@ def main():
 
     # l'ordre est important
     set_variable()
+    keys_init()
     test_path_to_shot_directory()
     create_directories()
     set_tempo()
     get_texte()
     get_semaphore_objet()
-    set_video()
+    
+    if gl.conf['modifiable']['video']:
+        set_video()
+        
+    #set_image_size()
     
     print("Le bonjour des mondoshawan !")

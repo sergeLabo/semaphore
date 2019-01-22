@@ -5,8 +5,11 @@
 # divers
 old/
 shot/
+shot_NB/
 video/
 langage_semaphore/
+shot_resize/
+shot_resize_0/
 
 # Python test
 *_old.py
