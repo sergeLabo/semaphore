@@ -92,7 +92,7 @@ class Resize:
 
     def batch(self):
         """Liste des images, lecture, conversion, save"""
-        print(self.shot_list)
+
         # Pour chaque image
         for shot in self.shot_list:
             # Lecure

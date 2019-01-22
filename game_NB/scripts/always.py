@@ -27,8 +27,6 @@ from random import uniform, choice
 from bge import logic as gl
 from bge import render
 
-from scripts.key_capture import keyboard_text
-
 
 def main():
     # Capture du clavier
@@ -154,27 +152,3 @@ def get_name_file_shot():
                         '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
 
     return gl.name_file_shot
-
-"""  
-bge.render.setWindowSize(width, height)
-
-    Set the width and height of the window (in pixels). This also works for fullscreen applications.
-
-    Note
-
-    Only works in the standalone player, not the Blender-embedded player.
-    Parameters:	
-
-        width (integer) – width in pixels
-        height (integer) – height in pixels
-
-bge.render.makeScreenshot(filename)
-
-    Writes an image file with the current displayed frame.
-
-    The image is written to ‘filename’. The path may be absolute (eg. /home/foo/image) or relative when started with // (eg. //image). Note that absolute paths are not portable between platforms. If the filename contains a #, it will be replaced by an incremental index so that screenshots can be taken multiple times without overwriting the previous ones (eg. image-#).
-
-    Settings for the image are taken from the render settings (file format and respective settings, gamma and colospace conversion, etc). The image resolution matches the framebuffer, meaning, the window size and aspect ratio. When running from the standalone player, instead of the embedded player, only PNG files are supported. Additional color conversions are also not supported.
-    Parameters:	filename (string) – path and name of the file to write
-
-"""

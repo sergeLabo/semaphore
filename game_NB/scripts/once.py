@@ -63,14 +63,11 @@ def set_variable():
     # nombre de shot total
     gl.nombre_shot_total = gl.conf['modifiable']['nombre_shot_total']
     
-    # Nom du fichier: les dossiers changent mais les indices continuent
-    gl.name_file_shot = gl.current_dir + 'shot/shot_' + str(gl.numero) + '.png'
-
     # conversion lettre vers angle
     gl.lettre_table = lettre_table
 
     # Dossier d'enregistrement des images
-    gl.shot_directory = gl.conf['modifiable']['path']
+    gl.shot_directory = gl.conf['modifiable']['path_shot']
 
     # Nombre d'images par dossier
     gl.nombre_de_fichiers_par_dossier = gl.conf['modifiable']['nombre_de_fichiers_par_dossier']
@@ -91,28 +88,15 @@ def set_variable():
     gl.static = gl.conf['modifiable']['static']
     gl.rotation_socle =gl.conf['modifiable']['rotation_socle']
     
-def keys_init():
-    gl.one = 0
-    gl.two = 0
-    gl.enter = 0
-    gl.backspace = 0
-    gl.keyboard_text = ""
-    
 def test_path_to_shot_directory():
-    if os.path.exists(gl.shot_directory) and gl.shot_directory[-4:] == "shot":
+    if os.path.exists(gl.shot_directory)::
         print()
     else:
-        print("Le dossier /shot n'existe pas !")
+        print("Le dossier /shot_NB n'existe pas !")
         print("Vous devez le créer et définir son chemin dans semaphore.ini")
-        print("Pas de slash à la fin de shot")
+        print("Pas de slash à la fin du dossier.")
         sleep(10)
         os._exit(0)
-  
-def create_shot_directory():
-    """Non utilisé, ce dossier doit être défini dans le *.ini"""
-    # Création du dossier shot
-    mt = MyTools()
-    mt.create_directory(gl.current_dir + 'shot')
     
 def create_directories():
     """
@@ -145,45 +129,6 @@ def get_texte():
     # L'indice de la lettre à lire
     gl.lettre = 0
 
-def film_error():
-    print("Une video valide doit être définie dans semaphore.ini")
-    print("Le fichier doit être dans game/scripts/video/")
-    sleep(10)
-    os._exit(0)
-        
-def set_video():
-    # identify a static texture by name
-    #matID = texture.materialID(gl.plane, 'IMlogo-labomedia.png')
-    matID = texture.materialID(gl.plane, 'MAblack')
-    
-    # create a dynamic texture that will replace the static texture
-    gl.my_video = texture.Texture(gl.plane, matID)
-
-    # define a source of image for the texture, here a movie
-    try:
-        movie = gl.expandPath('//scripts/video/' + gl.conf['modifiable']['film'])
-        print('Movie =', movie)
-    except:
-        film_error()
-            
-    try:
-        s = os.path.getsize(movie)
-        print("Taille du film:", s)
-    except:
-        film_error()
-    
-    gl.my_video.source = texture.VideoFFmpeg(movie)
-    gl.my_video.source.scale = False
-
-    # Infinite loop
-    gl.my_video.source.repeat = -1
-
-    # Vitesse normale: < 1 ralenti, > 1 accélère
-    gl.my_video.source.framerate = 1.0
-    
-    # quick off the movie, but it wont play in the background
-    gl.my_video.source.play()
-
 def get_semaphore_objet():
     all_obj = blendergetobject.get_all_objects()
     gl.bras_central = all_obj['main']
@@ -204,14 +149,10 @@ def main():
 
     # l'ordre est important
     set_variable()
-    keys_init()
     test_path_to_shot_directory()
     create_directories()
     set_tempo()
     get_texte()
     get_semaphore_objet()
-    
-    if gl.conf['modifiable']['video']:
-        set_video()
     
     print("Le bonjour des mondoshawan !")
