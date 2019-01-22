@@ -10,14 +10,14 @@ Un shot:
 Quelques images pour apprendre, en gris 40x40 floue, différentes tailles et rotation
 
 ![i](/doc/some_shot_NB/shot_24000_i.png =100x100)
-![ ](/doc/some_shot_NB/shot_24001_ .png =100x100)
-![f](/doc/some_shot_NB/shot_24002_f.png =100x100)
-![a](/doc/some_shot_NB/shot_24003_a.png =100x100)
-![c](/doc/some_shot_NB/shot_24004_c.png =100x100)
-![i](/doc/some_shot_NB/shot_24005_i.png =100x100)
-![e](/doc/some_shot_NB/shot_24006_e.png =100x100)
-![m](/doc/some_shot_NB/shot_24007_m.png =100x100)
-
+<img src="/doc/some_shot_NB/shot_24000_i.png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24001_ .png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24002_f.png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24003_a.png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24004_c.png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24005_i.png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24006_e.png" width="100" height="100">
+<img src="/doc/some_shot_NB/shot_24007_m.png" width="100" height="100">
 
 ### Tout sur ce projet
 * [Sémaphore](https://ressources.labomedia.org/jeu_du_semaphore_dans_le_blender_game_engine)
