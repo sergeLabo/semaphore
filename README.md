@@ -13,10 +13,13 @@ Quelques images pour apprendre, en gris 40x40 floue, différentes tailles et rot
 
 
 ### Ce markdown est nul
+
 10 push pour un début de quelque chose !
 
 ### Tout sur ce projet
+
 * [Sémaphore](https://ressources.labomedia.org/jeu_du_semaphore_dans_le_blender_game_engine)
 
 ### Attention
+
 La video du fond (700 Mo) et les shots (33 Go !) ne sont pas dans ce dépôt.
