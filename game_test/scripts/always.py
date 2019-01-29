@@ -20,31 +20,29 @@
 Lancé à chaque frame durant tout le jeu.
 """
 
-from time import sleep
+
 import math
 from random import uniform, choice
 
 from bge import logic as gl
 from bge import render
 
-from scripts.key_capture import keyboard_text
+from scripts.key_capture import input_text, special_keys
 
 
 def main():
-    # Capture du clavier
-    #keyboard_text()
-
-    # Les différentes phases du jeu
-    if gl.tempoDict['shot'].tempo == gl.chars_change:
-        gl.chars = get_chars()
-        display(gl.chars)
-        # glissement rotation à chaque nouveau caractère du socle
-        if not gl.static:
-            glissement_socle()
-            rotation_socle()
-
-    if gl.tempoDict['shot'].tempo == gl.make_shot:
-        make_shot()
+    # Demande de 1 ou 2
+    gl.text_blend_obj['Text'] = "1 - Saisie clavier\n\n\n2 - Lecture des textes"
+    
+    # Clavier 1 ou 2
+    special_keys()
+    
+    # Texte saisi au clavier
+    if gl.one:
+        main_1()
+    # Texte des fichiers
+    if gl.two:
+        main_2()
 
     # Avance de la video
     if gl.conf['modifiable']['video']:
@@ -56,6 +54,54 @@ def main():
     # Toujours partout, tempo 'shot' commence à 0
     gl.tempoDict.update()
 
+def main_1():
+    """Affichage des signes à partir du texte saisi"""
+
+    # Affichage du texte saisi dans blender
+    gl.text_blend_obj['Text'] = gl.captured_text
+    
+    # Capture du clavier
+    if not gl.enter:
+        input_text()
+    else:
+        gl.text_blend_obj['Text'] = gl.chars
+        # Affichage sur sémaphore
+        if gl.tempoDict['chars'].tempo == 1:
+            gl.chars = get_keyboard_chars()
+            display(gl.chars)
+            # glissement rotation à chaque nouveau caractère du socle
+            if not gl.static:
+                glissement_socle()
+                rotation_socle()
+
+def main_2():
+    """Affichage des signes à partir des textes latins"""
+    gl.text_blend_obj['Text'] = gl.chars
+    if gl.tempoDict['shot'].tempo == gl.chars_change:
+        gl.chars = get_chars()
+        display(gl.chars)
+        # glissement rotation à chaque nouveau caractère du socle
+        if not gl.static:
+            glissement_socle()
+            rotation_socle()
+    # #if gl.tempoDict['shot'].tempo == gl.make_shot:
+        # #make_shot()
+    
+def get_keyboard_chars():
+    try:
+        chars = gl.captured_text[gl.captured_lettre]
+    except:
+        chars = ""
+    chars = chars.lower()
+    gl.captured_lettre += 1
+    return chars
+    
+def get_chars():
+    chars = gl.text_str[gl.lettre]
+    chars = chars.lower()
+    gl.lettre += 1
+    return chars
+    
 def change_socle_position():
     """socle position au centre = 0, 0, -6"""
 
@@ -77,17 +123,17 @@ def glissement_socle():
     """Y en random. Plus y est grand plus je me déplace sur x et z"""
 
     # Position au hazard sur y
-    gl.y = uniform(0, 40)
+    gl.y = uniform(10, 120) * gl.glissement_socle
 
     # ## x et z dépendent de y
     # si y = 0: x de -3 à 3
     # si y = 40: x de -30 à 30
     # coeff au pif
-    gl.x = 0.45 * gl.y * choice([-1, 1])
+    gl.x = 0.45 * gl.y * choice([-1, 1]) * gl.glissement_socle
         
     # si y = 0: z de -2 à 2
     # si y = 40: z de -30 à 30     
-    gl.z = 0.45 * gl.y * choice([-1, 1])
+    gl.z = 0.45 * gl.y * choice([-1, 1]) * gl.glissement_socle
 
     # J'applique
     gl.socle.worldPosition[0] = gl.x
@@ -124,12 +170,6 @@ def get_angles(chars):
     except:
         angles = (0, 0, 0)
     return angles
-
-def get_chars():
-    chars = gl.text_str[gl.lettre]
-    chars = chars.lower()
-    gl.lettre += 1
-    return chars
     
 def make_shot():
     

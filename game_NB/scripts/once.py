@@ -66,9 +66,6 @@ def set_variable():
     # conversion lettre vers angle
     gl.lettre_table = lettre_table
 
-    # Dossier d'enregistrement des images
-    gl.shot_directory = gl.conf['modifiable']['path_shot']
-
     # Nombre d'images par dossier
     gl.nombre_de_fichiers_par_dossier = gl.conf['modifiable']['nombre_de_fichiers_par_dossier']
 
@@ -87,23 +84,26 @@ def set_variable():
     # Déplacement du socle
     gl.static = gl.conf['modifiable']['static']
     gl.rotation_socle =gl.conf['modifiable']['rotation_socle']
-    
-def test_path_to_shot_directory():
-    if os.path.exists(gl.shot_directory)::
-        print()
-    else:
-        print("Le dossier /shot_NB n'existe pas !")
-        print("Vous devez le créer et définir son chemin dans semaphore.ini")
-        print("Pas de slash à la fin du dossier.")
-        sleep(10)
-        os._exit(0)
+    gl.glissement_socle = gl.conf['modifiable']['glissement_socle']
     
 def create_directories():
     """
     Création de n dossiers
-    /media/data/3D/projets/semaphore/game/shot/shot_0/shot_a_0.png
+    un fichier = ./semaphore/shot/shot_0/shot_a_0.png
     """
     mt = MyTools()
+
+    # Le blend est dans ./semaphore/game_NB = dossier courrant
+    # /semaphore/game_NB/scripts
+    root = mt.get_absolute_path(__file__)[:-24]
+    print("Chemin de semaphore:", root)
+    
+    # Dossier d'enregistrement des images
+    gl.shot_directory = root + '/shot_NB'
+    
+    # Si le dossier n'existe pas, je le crée
+    mt = MyTools()
+    mt.create_directory(gl.shot_directory)
     
     # Nombre de dossiers nécessaires
     n = int(gl.nombre_shot_total / gl.nombre_de_fichiers_par_dossier)
@@ -135,9 +135,6 @@ def get_semaphore_objet():
     gl.bras_gauche = all_obj['gauche']
     gl.bras_droit = all_obj['droit']
     gl.socle = all_obj['socle']
-
-    if gl.conf['modifiable']['video']:
-        gl.plane = all_obj['Plane']
         
 def main():
     """Lancé une seule fois à la 1ère frame au début du jeu par main_once."""
@@ -149,7 +146,6 @@ def main():
 
     # l'ordre est important
     set_variable()
-    test_path_to_shot_directory()
     create_directories()
     set_tempo()
     get_texte()

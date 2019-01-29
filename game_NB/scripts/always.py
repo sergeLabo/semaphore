@@ -44,10 +44,6 @@ def main():
     if gl.tempoDict['shot'].tempo == gl.make_shot:
         make_shot()
 
-    # Avance de la video
-    if gl.conf['modifiable']['video']:
-        video_refresh()
-
     # Fin du jeu à nombre_shot_total
     end()
 
@@ -72,20 +68,19 @@ def rotation_socle():
     gl.socle.worldOrientation = xyz.to_matrix()
     
 def glissement_socle():
-    """Y en random. Plus y est grand plus je me déplace sur x et z"""
+    """Y = random
+    coeff sur x et z pour avoir des varitions mais pas trop
+    TODO: calcul stupide !
+    si y = -1: x = -0.7 à 0.7, z = 1.25 à 0.6
+    si y = 5 : x = -3.5 à 3.5, z = -6.25 à - 3.1
+    """
 
     # Position au hazard sur y
-    gl.y = uniform(0, 40)
+    gl.y = uniform(-1, 5)
 
-    # ## x et z dépendent de y
-    # si y = 0: x de -3 à 3
-    # si y = 40: x de -30 à 30
-    # coeff au pif
-    gl.x = 0.45 * gl.y * choice([-1, 1])
-        
-    # si y = 0: z de -2 à 2
-    # si y = 40: z de -30 à 30     
-    gl.z = 0.45 * gl.y * choice([-1, 1])
+    # x et z dépendent de y
+    gl.x = 0.70 * gl.y * uniform(-1, 1)
+    gl.z = 0.50 * gl.y * uniform(-2.5, -1.2)
 
     # J'applique
     gl.socle.worldPosition[0] = gl.x
@@ -95,15 +90,20 @@ def glissement_socle():
 def end():
     if gl.numero == gl.nombre_shot_total:
         gl.endGame()
-    
-def video_refresh():
-    """call this function every frame to ensure update of the texture."""
-    
-    gl.my_video.refresh(True)
 
 def display(chars):
+    """Affichage de la lettre par rotation des bras.
+    Variations des angles avec random
+    """
+
+    # 180, 90, 0
     angles = get_angles(chars)
 
+    # Variation sur les angles
+    # #angles[0] = angles[0] + uniform(-10, 10)
+    # #angles[1] = angles[1] + uniform(-10, 10)
+    # #angles[2] = angles[2] + uniform(-10, 10)
+    
     xyz = gl.bras_central.worldOrientation.to_euler()
     xyz[1] = math.radians(angles[0])
     gl.bras_central.localOrientation = xyz.to_matrix()
@@ -143,7 +143,6 @@ def get_name_file_shot():
     4000
     je suis à gl.numero = 5555
     numero du dossier = n = 1 = int(5555/4000)
-
     """
 
     n = int(gl.numero / gl.nombre_de_fichiers_par_dossier)

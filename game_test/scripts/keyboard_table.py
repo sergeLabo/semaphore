@@ -32,7 +32,10 @@ ALL_KEYS = {events.AKEY: "A",
             events.XKEY: "X",
             events.YKEY: "Y",
             events.ZKEY: "Z",
-            events.SPACEKEY: "SPACE"}
+            events.SPACEKEY: " "}
+            
+            # #events.ONEKEY: "1",
+            # #events.TWOKEY: "2"}
 
 """
 ALPHABET_KEYS = {   events.AKEY: "A",

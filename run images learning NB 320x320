@@ -1,7 +1,0 @@
-#!/bin/bash
-# -*- coding: UTF-8 -*-
-
-
-cd game_NB
-
-blenderplayer semaphore_NB.blend

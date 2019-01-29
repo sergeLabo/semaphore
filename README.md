@@ -7,15 +7,49 @@ Un shot:
 
 ### 60 000 images pour créer le réseau de neuronnes
 
-Quelques images pour apprendre, en gris 40x40 floue, différentes tailles et rotations
+Quelques images pour apprendre, en gris 40x40 floues, différentes tailles et rotations
 
 <img src="/doc/some_shot_NB/shot_24000_i.png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24001_ .png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24002_f.png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24003_a.png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24004_c.png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24005_i.png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24006_e.png" width="100" height="100"/><img src="/doc/some_shot_NB/shot_24007_m.png" width="100" height="100"/>
 
 
-### La domentation sur ressources.labomedia.org
+### La documentation sur ressources.labomedia.org
 
 [Sémaphore](https://ressources.labomedia.org/jeu_du_semaphore_dans_le_blender_game_engine)
 
 ### Attention
 
 La video du fond (700 Mo) et les shots (33 Go !) ne sont pas dans ce dépôt.
+
+
+### Installation
+
+#### pymultilame
+
+~~~text
+sudo pip3 install -e git+https://github.com/sergeLabo/pymultilame.git#egg=pymultilame
+~~~
+
+Mise à jour:
+~~~text
+sudo pip3 install --upgrade git+https://github.com/sergeLabo/pymultilame.git#egg=pymultilame
+~~~
+
+#### Opencv et numpy
+
+~~~text
+sudo pip3 install numpy
+sudo pip3 install opencv-python
+~~~
+
+#### Blender 2.79b mais pas 2.80 qui n'a plus de BGE
+
+~~~text
+sudo apt install blender
+~~~
+
+### Utilisation
+
+Ouvrir un teminal dans le dossier semaphore
+~~~text
+./semaphore.sh
+~~~

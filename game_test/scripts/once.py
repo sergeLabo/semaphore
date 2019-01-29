@@ -58,6 +58,7 @@ def set_image_size():
     render.setWindowSize(a, a)
 
 def set_variable():
+    
     # Numero de shot de 0 à infini
     gl.numero = 0
 
@@ -94,7 +95,8 @@ def set_variable():
     # Déplacement du socle
     gl.static = gl.conf['modifiable']['static']
     gl.rotation_socle =gl.conf['modifiable']['rotation_socle']
-    
+    gl.glissement_socle = gl.conf['modifiable']['glissement_socle']
+        
 def keys_init():
     gl.one = 0
     gl.two = 0
@@ -133,7 +135,8 @@ def create_directories():
         mt.create_directory(directory)
     
 def set_tempo():
-    tempo_liste = [("shot", int(gl.conf['modifiable']['shot_every']))]
+    tempo_liste = [("shot", int(gl.conf['modifiable']['shot_every'])),
+                   ("chars", int(gl.conf['modifiable']['chars_every']))]
 
     # Comptage des frames par lettre
     gl.tempoDict = Tempo(tempo_liste)
@@ -148,6 +151,11 @@ def get_texte():
 
     # L'indice de la lettre à lire
     gl.lettre = 0
+
+def get_captured_text():
+    # Saisie clavier
+    gl.captured_lettre = 0
+    gl.captured_text = ""
 
 def film_error():
     print("Une video valide doit être définie dans semaphore.ini")
@@ -194,6 +202,7 @@ def get_semaphore_objet():
     gl.bras_gauche = all_obj['gauche']
     gl.bras_droit = all_obj['droit']
     gl.socle = all_obj['socle']
+    gl.text_blend_obj = all_obj['Text']
 
     if gl.conf['modifiable']['video']:
         gl.plane = all_obj['Plane']
@@ -212,12 +221,14 @@ def main():
     test_path_to_shot_directory()
     create_directories()
     set_tempo()
+
+    # Texte des fichiers latin
     get_texte()
+    get_captured_text()
+
     get_semaphore_objet()
     
     if gl.conf['modifiable']['video']:
         set_video()
-        
-    #set_image_size()
     
     print("Le bonjour des mondoshawan !")

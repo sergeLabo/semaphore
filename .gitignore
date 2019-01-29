@@ -4,12 +4,13 @@
 
 # divers
 old/
+alphabet_old/
 shot/
 shot_NB/
 video/
 langage_semaphore/
 shot_resize/
-shot_resize_0/
+shots/
 
 # Python test
 *_old.py
@@ -18,6 +19,9 @@ shot_resize_0/
 __pycache__/
 *.py[cod]
 *.pyc
+
+# Pycharm
+.idea/
 
 # install directory
 build/
