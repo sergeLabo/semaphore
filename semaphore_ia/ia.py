@@ -314,12 +314,12 @@ class SemaphoreIA:
                 print("Image:", i)
                 
         # Save
-        np.save('weights', self.weight)
+        np.save(self.root + 'weights', self.weight)
         
     def ia_testing(self):
         print("Testing...")
         # Load weights
-        weight = np.load('weights.npy')
+        weight = np.load(self.root + 'weights.npy')
         
         S = 0
         for a, d in zip(self.x_test, self.y_test):
@@ -367,5 +367,5 @@ if __name__ == "__main__":
 
     # ia
     sia = SemaphoreIA()
-    #sia.ia_training()
+    sia.ia_training()
     sia.ia_testing()
