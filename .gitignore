@@ -1,6 +1,7 @@
 
 # Geany
 *.geany
+*.geanywb
 
 # divers
 old/
@@ -12,6 +13,7 @@ langage_semaphore/
 shot_resize/
 shots/
 *.npz
+*.npy
 
 # Python test
 *_old.py

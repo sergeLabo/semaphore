@@ -53,3 +53,7 @@ Ouvrir un teminal dans le dossier semaphore
 ~~~text
 ./semaphore.sh
 ~~~
+
+### Merci à La Labomedia
+
+* [La Labomedia](https://ressources.labomedia.org)
