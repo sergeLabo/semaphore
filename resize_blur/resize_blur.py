@@ -53,7 +53,7 @@ class ResizeBlur:
 
         # Flou
         self.blur = blur
-        
+
         # Mes outils personnels
         self.tools = MyTools()
 
@@ -63,10 +63,10 @@ class ResizeBlur:
 
         # Le terrain de jeu
         self.create_shot_resize_dir()
-        
+
         # Liste
         self.shot_list = self.get_shot_list()
-        
+
         self.create_sub_folders()
 
         # display
@@ -75,7 +75,7 @@ class ResizeBlur:
         self.img_in = np.zeros((320, 320), dtype=np.uint8)
         self.img_out = np.zeros((self.size, self.size), dtype=np.uint8)
         self.display_thread()
-        
+
     def create_shot_resize_dir(self):
 
         directory = self.root + "/shot_resize"
@@ -91,7 +91,7 @@ class ResizeBlur:
         for i in range(n):
             directory = self.root + "/shot_resize" + '/shot_' + str(i).zfill(3)
             self.tools.create_directory(directory)
-        
+
     def get_new_name(self, shot):
         """ de
         /media/data/3D/projets/semaphore/shot_NB/shot_000/shot_0_a.png
@@ -100,7 +100,7 @@ class ResizeBlur:
         j'ai
         /media/data/3D/projets/semaphore/shot_resize/shot_000/shot_3921_h.png
         """
-        
+
         t = shot.partition("shot_NB")
         # t = ('/media/data/3D/projets/semaphore/', 'shot_NB',
         #                                       '/shot_000/shot_1054_s.png')
@@ -110,7 +110,7 @@ class ResizeBlur:
 
     def change_resolution(self, img, x, y):
         """Une image peut-être ratée"""
-        
+
         try:
             res = cv2.resize(img, (x, y), interpolation=cv2.INTER_AREA)
         except:
@@ -119,12 +119,12 @@ class ResizeBlur:
 
     def verif_shot_integrity(self, shot):
         """Vérifie si la taille de l'image est cohérente"""
-        
+
         info = os.path.getsize(shot)
         if info < TAILLE_MINI_FICHIER_IMAGE:
             print("Intégrité - image à vérifier:", shot)
             os._exit(0)
-        
+
     def batch(self):
         """Liste des images, lecture, conversion, save"""
 
@@ -149,18 +149,18 @@ class ResizeBlur:
                 self.img_in = img
                 self.img_out = self.change_resolution(img_out, 600, 600)
             i += 1
-            
+
             # Save
             new_shot = self.get_new_name(shot)
             cv2.imwrite(new_shot, img_out)
 
         # Fin du thread
         self.disp = False
-        
+
     def display_thread(self):
         t = threading.Thread(target=self.display)
-        t.start()        
-        
+        t.start()
+
     def display(self):
         cv2.namedWindow('Image In')
         cv2.namedWindow('Image Out')
@@ -168,32 +168,32 @@ class ResizeBlur:
             cv2.imshow('Image In', self.img_in)
             cv2.imshow('Image Out', self.img_out)
             # Echap
-            if cv2.waitKey(33) == 27:  
+            if cv2.waitKey(33) == 27:
                 break
         cv2.destroyAllWindows()
-                
+
     def get_shot_list(self):
         """Liste des images"""
 
         # Liste
         shot = self.root + "/shot_NB"
         shot_list = self.tools.get_all_files_list(shot, ".png")
-        
+
         print("Dossier des images NB:", shot)
         print("Nombre d'images:", len(shot_list))
-        
+
         return shot_list
 
-    
+
 def apply_blur(img, k):
-    
+
     return cv2.blur(img, (k, k))
 
 
 if __name__ == "__main__":
 
     SIZE = 40
-    BLUR = 1
+    BLUR = 3
 
     print("ResizeBlur de toutes les images dans le dossier shot")
     root = MyTools().get_absolute_path(__file__)[:-27]

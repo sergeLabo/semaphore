@@ -41,7 +41,7 @@ from pymultilame import MyTools
 
 
 def sigmoid(x):
-    """la fonction sigmoïde est une courbe en S:
+    """La fonction sigmoïde est une courbe en S:
     https://fr.wikipedia.org/wiki/Sigmo%C3%AFde_(math%C3%A9matiques)"""
     return 1 / (1 + np.exp(-x))
 
@@ -74,7 +74,7 @@ def relu_derivative(z):
     les réels positifs et la valeur 0 pour les réels strictement négatifs.
     """
     return np.asarray(z > 0, dtype=np.float32)
-    
+
 def get_eye():
     """An array where all elements are equal to zero, except for the k-th
     diagonal, whose values are equal to one.
@@ -124,25 +124,26 @@ class SemaphoreIA:
 
         self.size = size
         self.learning_rate = learning_rate
-        
+
         # Mon objet avec mes outils perso
         self.mytools = MyTools()
-        
+
         # Valable avec exec ici ou en import
         self.root = root
         print("Dossier semaphore", self.root)
-        
+
         npz_file = np.load(self.root + 'semaphore.npz')
         self.x_train, self.y_train = npz_file['x_train'], npz_file['y_train']
         self.x_test, self.y_test = npz_file['x_test'], npz_file['y_test']
 
         self.activations = [relu, relu, sigmoid]
         self.activations_derivative = self.get_activations_derivative()
-        self.layers = [self.size**2, 100, 100, 27]
+        self.layers = [self.size*self.size, 100, 100, 27]
         self.weight = self.get_weight()
-        
+
         # display
         self.disp = True
+        self.image_lock = True
         self.img = np.zeros((self.size, self.size), dtype=np.uint8)
         self.display_thread()
 
@@ -165,7 +166,7 @@ class SemaphoreIA:
                                             sigmoid: sigmoid_derivative]
         """
         return [globals()[f.__name__ + '_derivative'] for f in self.activations]
-    
+
     def ia_training(self):
         """Training: Apprentissage avec les images de semaphore.npz"""
 
@@ -175,45 +176,43 @@ class SemaphoreIA:
         A_dict = {}
 
         for i, (img, val) in enumerate(zip(self.x_train, self.y_train)):
-            # Affichage               
+            # Affichage
             self.mangalore(i, img)
-            
-            img = transpose(img)
 
+            img = transpose(img)
             A_dict[0] = img
             for k in range(len(self.layers)-1):
                 z = get_dot(self.weight[k], img)
                 img = self.activations[k](z)
                 A_dict[k + 1] = img
-
             da = img - eye[:,[val]]
-
             for k in range(len(self.layers)-2, -1, -1):
                 dz = da * self.activations_derivative[k](A_dict[k+1])
                 dW = get_dot(dz, A_dict[k].T)
                 da = np.dot(self.weight[k].T, dz)
-                self.weight[k] -= learning_rate * dW[1,:]
-                  
+                self.weight[k] -= self.learning_rate * dW[1,:]
+
         # Save
         np.save(self.root + 'weights', self.weight)
         # Fin du thread
         self.disp = False
+        self.image_lock = False
 
     def ia_testing(self):
         print("Testing...")
         # Load weights
         weight = np.load(self.root + 'weights.npy')
-        
+
         S = 0
         for a, d in zip(self.x_test, self.y_test):
             for k in range(len(self.layers)-1):
                 a = self.activations[k](np.dot(weight[k], a))
             if np.argmax(a) == d:
                 S += 1
-                
+
         print("Accuracy: {}%".format(round((100.0 * S / len(self.x_test)), 1)))
 
-    def mangalore(self, i, img):  
+    def mangalore(self, i, img):
         # Pour faire patienter les mondoshawans et les mangalores
         if i % 1000 == 0:
             # img.shape = (1600,)
@@ -221,20 +220,21 @@ class SemaphoreIA:
             img_show = cv2.resize(img_show, (600, 600), interpolation=cv2.INTER_AREA)
             self.img = img_show
             print("Image:", i)
-                
+
     def display_thread(self):
         t = threading.Thread(target=self.display)
-        t.start()        
-        
+        t.start()
+
     def display(self):
         cv2.namedWindow('Image')
         while self.disp:
+            #with self.image_lock:
             cv2.imshow('Image', self.img)
             # Echap
-            if cv2.waitKey(33) == 27:  
+            if cv2.waitKey(33) == 27:
                 break
         cv2.destroyAllWindows()
-                
+
 
 def test_0():
     for x in [2, 5, -2.5, -0.25, 44, -77, -7.01]:
@@ -261,6 +261,7 @@ def test_1():
     print(a)
     print(a.shape)
 
+
 if __name__ == "__main__":
     # Test de fonctions
     root = MyTools().get_absolute_path(__file__)[:-18]
@@ -268,9 +269,9 @@ if __name__ == "__main__":
 
     # ia
     size = 40
-    
+
     # Variable globale
-    learning_rate = 0.2
+    learning_rate = 0.1
 
     sia = SemaphoreIA(root, size, learning_rate)
     sia.ia_training()

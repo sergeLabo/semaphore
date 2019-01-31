@@ -23,7 +23,7 @@ menu avec choix
     1 - Lance blender pour créer les images NB 320x320
 
 
-    
+
 """
 
 
@@ -48,45 +48,44 @@ menu_1 = """\n\n    Menu principal
         Choisir 6 pour modifier la configuration
         Choisir 0 pour quitter
         """
-        
+
 menu_2 = """\n\nConfiguration
-        Choisir 1 pour 
-        Choisir 2 pour 
+        Choisir 1 pour
+        Choisir 2 pour
         Choisir 0 pour retour au menu principal
         """
 
-def clear(): 
+def clear():
     """Efface le terminal"""
-    
-    # Windows 
-    if os.name == 'nt': 
-        os.system('cls') 
-  
-    # Mac and Linux (os.name is 'posix') 
-    else: 
-        os.system('clear') 
+
+    # Windows
+    if os.name == 'nt':
+        os.system('cls')
+
+    # Mac and Linux (os.name is 'posix')
+    else:
+        os.system('clear')
 
 
 class SemaphoreConfig(MyConfig):
     """# self.conf.save_config(section, key, value)"""
-    
+
     def __init__(self):
         self.root = MyTools().get_absolute_path(__file__)[:-12]
         print('Dossier de ce script:', self.root)
         super().__init__(self.root + "semaphore.ini")
 
-        
+
 class Menu(SemaphoreConfig):
     """Menu de tout le projet semaphore"""
     global menu_1, menu_2
-    
+
     def __init__(self):
         super().__init__()
 
-        
     def menu(self):
         global menu_1
-        
+
         choice ='0'
         while choice == '0':
             print(menu_1)
@@ -99,7 +98,7 @@ class Menu(SemaphoreConfig):
                 pop = ['xterm', '-e', 'blenderplayer', blend]
                 # shell=True ok pour linux seul
                 p = subprocess.Popen(pop, shell=False)
-                
+
             elif choice == "2":  # resize
                 print("Resize en 40x40 et blur des images du 1")
                 SIZE, BLUR = 40, 2
@@ -107,45 +106,50 @@ class Menu(SemaphoreConfig):
                 rb.batch()
                 clear()
                 self.menu()
-                
+
             elif choice == "3":  # Compression
                 print("\nCompression des images de shots")
-                sc = ShotsCompression(self.root)
+                train, test, size = 60000, 10000, 40
+                sc = ShotsCompression(self.root, train, test, size)
                 sc.create_semaphore_npz()
                 clear()
                 self.menu()
-                            
+
             elif choice == "4":  # IA training
                 print("\nApprentissage")
-                sia = SemaphoreIA(self.root)
+                size = 40
+                learning_rate = 0.2
+                sia = SemaphoreIA(self.root, size, learning_rate)
                 sia.ia_training()
                 clear()
                 self.menu()
-                            
+
             elif choice == "5":  # IA testing
                 print("\nTest de l'IA")
-                sia = SemaphoreIA(self.root)
+                size = 40
+                learning_rate = 0.2
+                sia = SemaphoreIA(self.root, size, learning_rate)
                 sia.ia_testing()
                 sleep(10)
                 clear()
                 self.menu()
-                                    
+
             elif choice == "6":  # config
                 print("Modification de la configuration")
                 self.config_menu()
-                
+
             else:
                 break
-                
+
         print("\n\nLe chemin est long du projet à la chose. Molière")
         os._exit(0)
-        
+
     def config_menu(self):
         global menu_2
-        
+
         choice ='0'
         print(menu_2)
-        
+
         while choice == '0':
             choice = input("Votre choix: ")
 
@@ -153,18 +157,18 @@ class Menu(SemaphoreConfig):
                 print("choix 1")
                 clear()
                 self.config_menu()
-                
+
             elif choice == "2":
                 print("Do Something 2")
                 clear()
                 self.config_menu()
-                
+
             else:
                 clear()
-                self.menu()  
+                self.menu()
 
-    
-    
+
+
 if __name__ == "__main__":
     m = Menu()
     m.menu()

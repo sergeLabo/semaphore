@@ -64,7 +64,7 @@ class ShotsCompression:
         self.train = train
         self.test  = test
         self.size = size
-        
+
         # Mon objet avec mes outils perso
         self.mytools = MyTools()
 
@@ -74,9 +74,9 @@ class ShotsCompression:
 
         self.get_images_list()
 
-        self.images = np.zeros((self.train, self.size**2), dtype=float)
+        self.images = np.zeros((self.train, self.size*self.size), dtype=float)
         self.labels = np.zeros((self.train), dtype=np.uint8)
-        self.images_test = np.zeros((self.test, self.size**2), dtype=float)
+        self.images_test = np.zeros((self.test, self.size*self.size), dtype=float)
         self.labels_test = np.zeros((self.test), dtype=np.uint8)
 
         # display
@@ -116,16 +116,15 @@ class ShotsCompression:
         for f in self.images_list:
             # Lecture de l'image f
             img = cv2.imread(f, 0)
-            
             self.mangalore(i, img)
 
             # Conversion du gris 0 à 255 en 0 à 1
-            #img.astype(float)
+            # img = np.reshape() / 255.0
             img = np.true_divide(img, 255)
 
             # Retaillage sur une ligne
-            img = np.resize(img, (self.size**2))
-                        
+            img = np.resize(img, (self.size * self.size))
+
             # Labels
             label = get_chars_label(f)
 
@@ -137,17 +136,17 @@ class ShotsCompression:
                 self.images_test[i - self.train] = img
                 self.labels_test[i - self.train] =  label
             i += 1
-                
+
         self.save_train()
         # Fin du thread
         self.disp = False
-        
-    def mangalore(self, i, img): 
+
+    def mangalore(self, i, img):
         # Affichage pour faire patienter les mondoshawans et les mangalores
         if i % 1000 == 0:
             print(i)
             self.img = img.copy()
-                
+
     def save_train(self):
         """Enregistre les arrays images et labels dans un fichier compressé
         ./semaphore.npz
@@ -176,14 +175,14 @@ class ShotsCompression:
                 break
         cv2.destroyAllWindows()
 
-        
+
 if __name__ == "__main__":
     print(MyTools().get_absolute_path(__file__))
     root = MyTools().get_absolute_path(__file__)[:-32]
     print("Current directory:", root)
 
     train, test, size = 60000, 10000, 40
-    
+
     # Compression des images
     sc = ShotsCompression(root, train, test, size)
     sc.create_semaphore_npz()

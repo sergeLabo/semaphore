@@ -29,8 +29,8 @@ from bge import render
 
 
 def main():
-    # Capture du clavier
-    #keyboard_text()
+    if gl.numero % 100 == 0:
+        print("Shot n°", gl.numero)
 
     # Les différentes phases du jeu
     if gl.tempoDict['shot'].tempo == gl.chars_change:
@@ -38,7 +38,8 @@ def main():
         display(gl.chars)
         # glissement rotation à chaque nouveau caractère du socle
         if not gl.static:
-            glissement_socle()
+            #glissement_socle()
+            change_socle_position()
             rotation_socle()
 
     if gl.tempoDict['shot'].tempo == gl.make_shot:
@@ -53,20 +54,20 @@ def main():
 def change_socle_position():
     """socle position au centre = 0, 0, -6"""
 
-    x = uniform(-10, 10)
-    y = uniform(-5, 50)
-    z = uniform(-4, 10)
+    x = uniform(-4, 4)
+    y = uniform(1, 10)
+    z = uniform(-4, 3)
 
     gl.socle.worldPosition[0] = x
     gl.socle.worldPosition[1] = y
     gl.socle.worldPosition[2] = z
-    
+
 def rotation_socle():
     angle = uniform(-gl.rotation_socle, gl.rotation_socle)
     xyz = gl.socle.localOrientation.to_euler()
     xyz[1] = math.radians(angle)
     gl.socle.worldOrientation = xyz.to_matrix()
-    
+
 def glissement_socle():
     """Y = random
     coeff sur x et z pour avoir des varitions mais pas trop
@@ -103,7 +104,7 @@ def display(chars):
     # #angles[0] = angles[0] + uniform(-10, 10)
     # #angles[1] = angles[1] + uniform(-10, 10)
     # #angles[2] = angles[2] + uniform(-10, 10)
-    
+
     xyz = gl.bras_central.worldOrientation.to_euler()
     xyz[1] = math.radians(angles[0])
     gl.bras_central.localOrientation = xyz.to_matrix()
@@ -111,11 +112,11 @@ def display(chars):
     xyz = gl.bras_gauche.localOrientation.to_euler()
     xyz[1] = math.radians(angles[1])
     gl.bras_gauche.localOrientation = xyz.to_matrix()
-    
+
     xyz = gl.bras_droit.localOrientation.to_euler()
     xyz[1] = math.radians(angles[2])
     gl.bras_droit.localOrientation = xyz.to_matrix()
-    
+
 def get_angles(chars):
     try:
         angles = gl.lettre_table[chars]
@@ -128,12 +129,12 @@ def get_chars():
     chars = chars.lower()
     gl.lettre += 1
     return chars
-    
+
 def make_shot():
-    
+
     name_file_shot = get_name_file_shot()
     render.makeScreenshot(name_file_shot)
-    
+
     #print(gl.chars, '--> shot ' + str(gl.numero))
     gl.numero += 1
 
@@ -146,7 +147,7 @@ def get_name_file_shot():
     """
 
     n = int(gl.numero / gl.nombre_de_fichiers_par_dossier)
-    
+
     gl.name_file_shot = gl.shot_directory + '/shot_' + str(n).zfill(3) +\
                         '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
 
