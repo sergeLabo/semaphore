@@ -11,6 +11,7 @@ video/
 langage_semaphore/
 shot_resize/
 shots/
+*.npz
 
 # Python test
 *_old.py

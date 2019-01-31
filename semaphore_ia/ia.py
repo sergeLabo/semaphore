@@ -20,21 +20,13 @@
 Principe:   A partir d'un lot d'image d'apprentissage,
             crée une reconnaissance de forme.
 
-Plus de documentation à:
-    https://ressources.labomedia.org/l_intelligence_du_semaphore
-
 Etape 1:
-    Un gros lot (ex. 60000) d'images identifiées avec une lettre dans le nom
-    du fichier est compressé dans un fichier *.npz. Ce fichier contient un
-    array avec les images sur une ligne.
-
-Etape 2:
     Création de l'intelligence
 
-Etape 3:
+Etape 2:
     Test de l'efficacité de l'intelligence
 
-Etape 4:
+Etape 3:
     print("Je suis très très intelligent, au moins autant que Einstein")
 
 """
@@ -43,8 +35,10 @@ Etape 4:
 import os
 import numpy as np
 import cv2
+import threading
 
 from pymultilame import MyTools
+
 
 def sigmoid(x):
     """la fonction sigmoïde est une courbe en S:
@@ -80,146 +74,6 @@ def relu_derivative(z):
     les réels positifs et la valeur 0 pour les réels strictement négatifs.
     """
     return np.asarray(z > 0, dtype=np.float32)
-
-def get_ACTIVATIONS_derivative():
-    """globals(): Return a dictionary representing the current global symbol table.
-    This is always the dictionary of the current module (inside a function or
-    method, this is the module where it is defined, not the module from which
-    it is called).
-
-    De [relu, relu, sigmoid], retourne [relu: relu_derivative,
-                                        relu: relu_derivative,
-                                        sigmoid: sigmoid_derivative]
-    """
-    return [globals()[f.__name__ + '_derivative'] for f in ACTIVATIONS]
-
-
-# Variable globale
-LAYERS = [40*40, 100, 100, 27]
-ACTIVATIONS = [relu, relu, sigmoid]
-ACTIVATIONS_derivative = get_ACTIVATIONS_derivative()
-LEARNING_RATE = 0.10
-
-CHARS_DICT = {  "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7,
-                "i": 8, "j": 9, "k": 10, "l": 11, "m": 12, "n": 13,
-                "o": 14, "p": 15, "q": 16, "r": 17, "s": 18, "t": 19, "u": 20,
-                "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, " ": 26 }
-
-
-def get_chars_label(img_file_name):
-    """img_file_name = ... /semaphore_ia/shots/shot_000/shot_0_a.png
-    Retourne le a
-    remplace les chars anormaux en " "
-    """
-    l = img_file_name[-5]
-    if l not in CHARS_DICT.keys():
-        l = " "
-    c = CHARS_DICT[l]
-    return c
-
-
-class ShotsCompression:
-
-    def __init__(self):
-
-        # Mon objet avec mes outils perso
-        self.mytools = MyTools()
-
-        # Valable avec exec ici ou en import
-        self.root = self.mytools.get_absolute_path(__file__)[:-5]
-
-        self.get_images_list()
-        self.images = np.zeros((60000, 1600), dtype=np.uint8)
-        self.labels = np.zeros((60000), dtype=np.uint8)
-        self.images_test = np.zeros((10000, 1600), dtype=np.uint8)
-        self.labels_test = np.zeros((10000), dtype=np.uint8)
-
-    def get_images_list(self):
-        """Liste de toutes les images avec leurs chemin absolu"""
-
-        a = self.root + 'shots'
-        print("Dossier des images:", a)
-
-        self.images_list = self.mytools.get_all_files_list(a, ".png")
-        print("Nombre d'images =", len(self.images_list))
-
-    def create_semaphore_npz(self):
-        """Lit toutes les images de
-        /media/data/3D/projets/semaphore/semaphore_ia/shots
-
-        60 000 images 40x40
-        transformation du array 40,40 en array 1, 1600
-        conversion 0:255 en 0:1
-
-        x_train = images = 60000x1600
-        y_train = labels = 60000x1
-
-        x_test = images = 10000x1600
-        y_test = labels = 10000x1
-
-        concatenate dans un gros array
-        enregistrement
-        """
-        i = 0
-
-        for f in self.images_list:
-
-            # Lecture de l'image f
-            img = cv2.imread(f, 0)
-
-            # Conversion du gris 0 à 255 en 0 à 1
-            img = np.true_divide(img, 255)
-
-            # Retaillage sur une ligne
-            img.resize((1, 1600))
-
-            # Labels
-            label = get_chars_label(f)
-
-            # Insertion par lignes
-            if i < 60000:
-                self.images[i] = img
-                self.labels[i] =  label
-            else:
-                self.images_test[i - 60000] = img
-                self.labels_test[i - 60000] =  label
-
-            # Pour faire patienter les mondoshawans et les mangalores
-            if i % 100 == 0:
-                print("Image:", i, "Taille:", self.images.shape)
-            i += 1
-
-        print("Vérification: taille des array:",
-                self.images.shape,
-                self.labels.shape,
-                self.images_test.shape,
-                self.labels_test.shape)
-
-        self.save_train()
-
-    def save_train(self):
-        """Enregistre les arrays images et labels dans un fichier compressé
-        ./semaphore.npz
-        x_train = images = 60000x1600
-        y_train = labels = 60000x1
-        """
-
-        outfile = self.root + 'semaphore.npz'
-        np.savez_compressed(outfile, **{"x_train": self.images,
-                                        "y_train": self.labels,
-                                        "x_test":  self.images_test,
-                                        "y_test":  self.labels_test})
-
-        print('Fichier compressé =', outfile, '\n\n\n')
-
-
-def get_weight():
-    """LAYERS = [1600, 100, 100, 27]
-    np.random.randn(a, b)
-    Retourne un array de shape=(a, b) from the standard normal distribution.
-    """
-    return [np.random.randn(LAYERS[k + 1], LAYERS[k]) / np.sqrt(LAYERS[k])\
-                                              for k in range(len(LAYERS) - 1)]
     
 def get_eye():
     """An array where all elements are equal to zero, except for the k-th
@@ -265,57 +119,86 @@ class SemaphoreIA:
     Avec un jeu de n shots à faire
     """
 
-    def __init__(self):
+    def __init__(self, root, size, learning_rate):
         """semaphore.npz doit être dans le même dossier que ce script"""
+
+        self.size = size
+        self.learning_rate = learning_rate
         
         # Mon objet avec mes outils perso
         self.mytools = MyTools()
         
         # Valable avec exec ici ou en import
-        self.root = self.mytools.get_absolute_path(__file__)[:-5]
+        self.root = root
+        print("Dossier semaphore", self.root)
         
         npz_file = np.load(self.root + 'semaphore.npz')
         self.x_train, self.y_train = npz_file['x_train'], npz_file['y_train']
         self.x_test, self.y_test = npz_file['x_test'], npz_file['y_test']
 
-        # list de array (100, 1600) (100, 100) (27, 100)
-        self.weight = get_weight()
+        self.activations = [relu, relu, sigmoid]
+        self.activations_derivative = self.get_activations_derivative()
+        self.layers = [self.size**2, 100, 100, 27]
+        self.weight = self.get_weight()
         
-    def ia_training(self):
-        """Apprentissage avec les images de semaphore.npz"""
+        # display
+        self.disp = True
+        self.img = np.zeros((self.size, self.size), dtype=np.uint8)
+        self.display_thread()
 
-        print("Training...")
+    def get_weight(self):
+        """self.layers = [1600, 100, 100, 27]
+        np.random.randn(a, b)
+        Retourne un array de shape=(a, b) from the standard normal distribution.
+        """
+        return [np.random.randn(self.layers[k + 1], self.layers[k]) / np.sqrt(self.layers[k])\
+                                                  for k in range(len(self.layers) - 1)]
+
+    def get_activations_derivative(self):
+        """globals(): Return a dictionary representing the current global symbol table.
+        This is always the dictionary of the current module (inside a function or
+        method, this is the module where it is defined, not the module from which
+        it is called).
+
+        De [relu, relu, sigmoid], retourne [relu: relu_derivative,
+                                            relu: relu_derivative,
+                                            sigmoid: sigmoid_derivative]
+        """
+        return [globals()[f.__name__ + '_derivative'] for f in self.activations]
+    
+    def ia_training(self):
+        """Training: Apprentissage avec les images de semaphore.npz"""
 
         # Oeil ?: array 27x27 avec diagonale de 1
         eye = get_eye()
-
         # Un dict pour stocker quoi ?
         A_dict = {}
 
         for i, (img, val) in enumerate(zip(self.x_train, self.y_train)):
+            # Affichage               
+            self.mangalore(i, img)
+            
             img = transpose(img)
 
             A_dict[0] = img
-            for k in range(len(LAYERS)-1):
+            for k in range(len(self.layers)-1):
                 z = get_dot(self.weight[k], img)
-                img = ACTIVATIONS[k](z)
+                img = self.activations[k](z)
                 A_dict[k + 1] = img
 
             da = img - eye[:,[val]]
 
-            for k in range(len(LAYERS)-2, -1, -1):
-                dz = da * ACTIVATIONS_derivative[k](A_dict[k+1])
+            for k in range(len(self.layers)-2, -1, -1):
+                dz = da * self.activations_derivative[k](A_dict[k+1])
                 dW = get_dot(dz, A_dict[k].T)
                 da = np.dot(self.weight[k].T, dz)
-                self.weight[k] -= LEARNING_RATE * dW[1,:]
-                
-            # Pour faire patienter les mondoshawans et les mangalores
-            if i % 100 == 0:
-                print("Image:", i)
-                
+                self.weight[k] -= learning_rate * dW[1,:]
+                  
         # Save
         np.save(self.root + 'weights', self.weight)
-        
+        # Fin du thread
+        self.disp = False
+
     def ia_testing(self):
         print("Testing...")
         # Load weights
@@ -323,13 +206,35 @@ class SemaphoreIA:
         
         S = 0
         for a, d in zip(self.x_test, self.y_test):
-            for k in range(len(LAYERS)-1):
-                a = ACTIVATIONS[k](np.dot(weight[k], a))
+            for k in range(len(self.layers)-1):
+                a = self.activations[k](np.dot(weight[k], a))
             if np.argmax(a) == d:
                 S += 1
                 
-        print("Accuracy: {}".format(round((100.0 * S / len(self.x_test)), 1)))
+        print("Accuracy: {}%".format(round((100.0 * S / len(self.x_test)), 1)))
 
+    def mangalore(self, i, img):  
+        # Pour faire patienter les mondoshawans et les mangalores
+        if i % 1000 == 0:
+            # img.shape = (1600,)
+            img_show = np.reshape(img, (self.size, self.size))
+            img_show = cv2.resize(img_show, (600, 600), interpolation=cv2.INTER_AREA)
+            self.img = img_show
+            print("Image:", i)
+                
+    def display_thread(self):
+        t = threading.Thread(target=self.display)
+        t.start()        
+        
+    def display(self):
+        cv2.namedWindow('Image')
+        while self.disp:
+            cv2.imshow('Image', self.img)
+            # Echap
+            if cv2.waitKey(33) == 27:  
+                break
+        cv2.destroyAllWindows()
+                
 
 def test_0():
     for x in [2, 5, -2.5, -0.25, 44, -77, -7.01]:
@@ -358,14 +263,15 @@ def test_1():
 
 if __name__ == "__main__":
     # Test de fonctions
-    #test_0()
-    #test_1()
-
-    # Compression des images
-    # #sc = ShotsCompression()
-    # #sc.create_semaphore_npz()
+    root = MyTools().get_absolute_path(__file__)[:-18]
+    print("Current directory:", root)
 
     # ia
-    sia = SemaphoreIA()
+    size = 40
+    
+    # Variable globale
+    learning_rate = 0.2
+
+    sia = SemaphoreIA(root, size, learning_rate)
     sia.ia_training()
     sia.ia_testing()

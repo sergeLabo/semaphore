@@ -32,15 +32,16 @@ import subprocess
 from time import sleep
 
 # Mon module perso: voir le readme pour install
-import pymultilame
+from pymultilame import MyTools, MyConfig
 
-from semaphore_ia.ia import SemaphoreIA, ShotsCompression
+from semaphore_ia.ia import SemaphoreIA
+from semaphore_ia.shot_compression import ShotsCompression
 from resize_blur.resize_blur import ResizeBlur
 
 
 menu_1 = """\n\n    Menu principal
         Choisir 1 pour créer les images NB 320x320
-        Choisir 2 pour retailler les images du 1
+        Choisir 2 pour retailler les images
         Choisir 3 pour créer le fichier compressé des images
         Choisir 4 pour excécuter l'apprentissage de l'IA
         Choisir 5 pour tester l'IA
@@ -66,14 +67,23 @@ def clear():
         os.system('clear') 
 
 
-class Menu:
-    """Menu de tout le projet semaphore"""
-    global menu_1
+class SemaphoreConfig(MyConfig):
+    """# self.conf.save_config(section, key, value)"""
     
     def __init__(self):
-        self.root = pymultilame.MyTools().get_absolute_path(__file__)[:-12]
+        self.root = MyTools().get_absolute_path(__file__)[:-12]
         print('Dossier de ce script:', self.root)
-                    
+        super().__init__(self.root + "semaphore.ini")
+
+        
+class Menu(SemaphoreConfig):
+    """Menu de tout le projet semaphore"""
+    global menu_1, menu_2
+    
+    def __init__(self):
+        super().__init__()
+
+        
     def menu(self):
         global menu_1
         
@@ -83,45 +93,44 @@ class Menu:
 
             choice = input("Votre choix: ")
 
-            if choice == "1":
+            if choice == "1":  # Blender
                 print("Création des images 320x320 en NB")
                 blend = self.root + '/game_NB/semaphore_NB.blend'
                 pop = ['xterm', '-e', 'blenderplayer', blend]
                 # shell=True ok pour linux seul
                 p = subprocess.Popen(pop, shell=False)
                 
-            elif choice == "2":
+            elif choice == "2":  # resize
                 print("Resize en 40x40 et blur des images du 1")
                 SIZE, BLUR = 40, 2
-                rb = ResizeBlur(SIZE, BLUR)
+                rb = ResizeBlur(self.root, SIZE, BLUR)
                 rb.batch()
-                rb.compression()
                 clear()
                 self.menu()
                 
-            elif choice == "3":
+            elif choice == "3":  # Compression
                 print("\nCompression des images de shots")
-                sc = ShotsCompression()
+                sc = ShotsCompression(self.root)
                 sc.create_semaphore_npz()
                 clear()
                 self.menu()
                             
-            elif choice == "4":
+            elif choice == "4":  # IA training
                 print("\nApprentissage")
-                sia = SemaphoreIA()
+                sia = SemaphoreIA(self.root)
                 sia.ia_training()
                 clear()
                 self.menu()
                             
-            elif choice == "5":
+            elif choice == "5":  # IA testing
                 print("\nTest de l'IA")
-                sia = SemaphoreIA()
+                sia = SemaphoreIA(self.root)
                 sia.ia_testing()
                 sleep(10)
                 clear()
                 self.menu()
                                     
-            elif choice == "6":
+            elif choice == "6":  # config
                 print("Modification de la configuration")
                 self.config_menu()
                 
@@ -154,7 +163,8 @@ class Menu:
                 clear()
                 self.menu()  
 
-
+    
+    
 if __name__ == "__main__":
     m = Menu()
     m.menu()
