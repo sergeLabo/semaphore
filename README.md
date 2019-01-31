@@ -5,6 +5,12 @@ Un sémaphore dans le Blender Game Engine pour créer une IA !
 Un shot:
 <img src="/doc/shot_15_y.png" width="300" height="300">
 
+### Contexte
+
+Réalisé avec:
+
+* Debian 10 Buster
+
 ### 60 000 images pour créer le réseau de neuronnes
 
 Quelques images pour apprendre, en gris 40x40 floues, différentes tailles et rotations
@@ -54,6 +60,6 @@ Ouvrir un teminal dans le dossier semaphore
 ./semaphore.sh
 ~~~
 
-### Merci à La Labomedia
+### Merci à:
 
 * [La Labomedia](https://ressources.labomedia.org)
