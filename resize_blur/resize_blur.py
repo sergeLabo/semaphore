@@ -44,6 +44,7 @@ from pymultilame import MyTools
 
 TAILLE_MINI_FICHIER_IMAGE = 999
 
+
 class ResizeBlur:
 
     def __init__(self, root, size, blur):
@@ -141,7 +142,7 @@ class ResizeBlur:
             img_out = self.change_resolution(img, self.size, self.size)
 
             # Flou
-            img_out = apply_blur(img_out, self.blur)
+            img_out = self.apply_blur(img_out, self.blur)
 
             # Affichage
             if i % 100 == 0:
@@ -184,16 +185,16 @@ class ResizeBlur:
 
         return shot_list
 
-
-def apply_blur(img, k):
-
-    return cv2.blur(img, (k, k))
+    def apply_blur(self, img, k):
+        if self.blur:
+            img = cv2.blur(img, (k, k))
+        return img
 
 
 if __name__ == "__main__":
 
     SIZE = 40
-    BLUR = 3
+    BLUR = 2
 
     print("ResizeBlur de toutes les images dans le dossier shot")
     root = MyTools().get_absolute_path(__file__)[:-27]

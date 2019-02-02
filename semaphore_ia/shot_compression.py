@@ -59,11 +59,12 @@ def get_chars_label(img_file_name):
 
 class ShotsCompression:
 
-    def __init__(self, root, train, test, size):
+    def __init__(self, root, train, test, size, gray=0):
 
         self.train = train
         self.test  = test
         self.size = size
+        self.gray = gray
 
         # Mon objet avec mes outils perso
         self.mytools = MyTools()
@@ -74,12 +75,20 @@ class ShotsCompression:
 
         self.get_images_list()
 
-        self.images = np.zeros((self.train, self.size*self.size), dtype=float)
+        if not self.gray:
+            # entier 0 et 1
+            self.images = np.zeros((self.train, self.size*self.size), dtype=np.uint8)
+            self.images_test = np.zeros((self.test, self.size*self.size), dtype=np.uint8)
+        else:
+            # 0 à 1 en float
+            self.images = np.zeros((self.train, self.size*self.size), dtype=float)
+            self.images_test = np.zeros((self.test, self.size*self.size), dtype=float)
+
+        # Entier
         self.labels = np.zeros((self.train), dtype=np.uint8)
-        self.images_test = np.zeros((self.test, self.size*self.size), dtype=float)
         self.labels_test = np.zeros((self.test), dtype=np.uint8)
 
-        # display
+        # Display
         self.disp = True
         self.img = np.zeros((self.size, self.size), dtype=np.uint8)
         self.display_thread()
@@ -181,8 +190,8 @@ if __name__ == "__main__":
     root = MyTools().get_absolute_path(__file__)[:-32]
     print("Current directory:", root)
 
-    train, test, size = 60000, 10000, 40
+    train, test, size, gray = 60000, 10000, 40, 0
 
     # Compression des images
-    sc = ShotsCompression(root, train, test, size)
+    sc = ShotsCompression(root, train, test, size, gray)
     sc.create_semaphore_npz()

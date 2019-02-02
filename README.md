@@ -60,6 +60,9 @@ Ouvrir un teminal dans le dossier semaphore
 ./semaphore.sh
 ~~~
 
+Important: Ne pas déplacer ou aggrandir la fenêtre de Blender pendant que les
+images défilent.
+
 ### Merci à:
 
 * [La Labomedia](https://ressources.labomedia.org)

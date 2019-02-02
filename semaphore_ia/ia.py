@@ -172,20 +172,20 @@ class SemaphoreIA:
 
         # Oeil ?: array 27x27 avec diagonale de 1
         eye = get_eye()
-        # Un dict pour stocker quoi ?
+        # garde en mémoire les états successifs des vecteurs qui correspondent aux couches de neurones
         A_dict = {}
-
-        for i, (img, val) in enumerate(zip(self.x_train, self.y_train)):
+        # vect_column = vecteur sur une colonne = a
+        for i, (vect_column, val) in enumerate(zip(self.x_train, self.y_train)):
             # Affichage
-            self.mangalore(i, img)
+            self.mangalore(i, vect_column)
 
-            img = transpose(img)
-            A_dict[0] = img
+            vect_column = transpose(vect_column)
+            A_dict[0] = vect_column
             for k in range(len(self.layers)-1):
-                z = get_dot(self.weight[k], img)
-                img = self.activations[k](z)
-                A_dict[k + 1] = img
-            da = img - eye[:,[val]]
+                z = get_dot(self.weight[k], vect_column)
+                vect_column = self.activations[k](z)
+                A_dict[k + 1] = vect_column
+            da = vect_column - eye[:,[val]]
             for k in range(len(self.layers)-2, -1, -1):
                 dz = da * self.activations_derivative[k](A_dict[k+1])
                 dW = get_dot(dz, A_dict[k].T)
@@ -216,9 +216,9 @@ class SemaphoreIA:
         # Pour faire patienter les mondoshawans et les mangalores
         if i % 1000 == 0:
             # img.shape = (1600,)
-            img_show = np.reshape(img, (self.size, self.size))
-            img_show = cv2.resize(img_show, (600, 600), interpolation=cv2.INTER_AREA)
-            self.img = img_show
+            img = np.reshape(img, (self.size, self.size))
+            img = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
+            self.img = img
             print("Image:", i)
 
     def display_thread(self):

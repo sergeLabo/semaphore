@@ -62,7 +62,7 @@ def set_variable():
 
     # nombre de shot total
     gl.nombre_shot_total = gl.conf['modifiable']['nombre_shot_total']
-    
+
     # conversion lettre vers angle
     gl.lettre_table = lettre_table
 
@@ -73,7 +73,7 @@ def set_variable():
     gl.chars = ""
     gl.chars_change = gl.conf['modifiable']['chars_change']
 
-    # Numéro de frame dans le cycle de chaque lettre 
+    # Numéro de frame dans le cycle de chaque lettre
     gl.make_shot = gl.conf['modifiable']['make_shot']
 
     # Position de départ du socle
@@ -85,7 +85,7 @@ def set_variable():
     gl.static = gl.conf['modifiable']['static']
     gl.rotation_socle =gl.conf['modifiable']['rotation_socle']
     gl.glissement_socle = gl.conf['modifiable']['glissement_socle']
-    
+
 def create_directories():
     """
     Création de n dossiers
@@ -97,23 +97,24 @@ def create_directories():
     # /semaphore/game_NB/scripts
     root = mt.get_absolute_path(__file__)[:-24]
     print("Chemin de semaphore:", root)
-    
+
     # Dossier d'enregistrement des images
     gl.shot_directory = root + '/shot_NB'
-    
+
     # Si le dossier n'existe pas, je le crée
     mt = MyTools()
     mt.create_directory(gl.shot_directory)
-    
+
     # Nombre de dossiers nécessaires
     n = int(gl.nombre_shot_total / gl.nombre_de_fichiers_par_dossier)
-    
+
     for i in range(n):
         directory = gl.shot_directory + '/shot_' + str(i).zfill(3)
         mt.create_directory(directory)
-    
+
 def set_tempo():
-    tempo_liste = [("shot", int(gl.conf['modifiable']['shot_every']))]
+    tempo_liste = [ ("shot", int(gl.conf['modifiable']['shot_every'])),
+                    ("frame", 999999999)]
 
     # Comptage des frames par lettre
     gl.tempoDict = Tempo(tempo_liste)
@@ -135,7 +136,15 @@ def get_semaphore_objet():
     gl.bras_gauche = all_obj['gauche']
     gl.bras_droit = all_obj['droit']
     gl.socle = all_obj['socle']
-        
+
+# #def solution_max():
+    # #gl.CHARS_DICT = {   "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6,
+                        # #"h": 7, "i": 8, "j": 9, "k": 10, "l": 11, "m": 12,
+                        # #"n": 13, "o": 14, "p": 15, "q": 16, "r": 17, "s": 18,
+                        # #"t": 19, "u": 20, "v": 21, "w": 22, "x": 23, "y": 24,
+                        # #"z": 25, " ": 26 }
+
+
 def main():
     """Lancé une seule fois à la 1ère frame au début du jeu par main_once."""
 
@@ -150,5 +159,5 @@ def main():
     set_tempo()
     get_texte()
     get_semaphore_objet()
-    
+
     print("Le bonjour des mondoshawan !")

@@ -16,20 +16,21 @@
 #
 ########################################################################
 
+
 """
 Lancé à chaque frame durant tout le jeu.
 """
 
 from time import sleep
 import math
-from random import uniform, choice
+from random import uniform
 
 from bge import logic as gl
 from bge import render
 
 
 def main():
-    if gl.numero % 100 == 0:
+    if gl.tempoDict['frame'].tempo % 60 == 0:
         print("Shot n°", gl.numero)
 
     # Les différentes phases du jeu
@@ -39,7 +40,8 @@ def main():
         # glissement rotation à chaque nouveau caractère du socle
         if not gl.static:
             #glissement_socle()
-            change_socle_position()
+            #change_socle_position()
+            glissement_socle()
             rotation_socle()
 
     if gl.tempoDict['shot'].tempo == gl.make_shot:
@@ -51,42 +53,36 @@ def main():
     # Toujours partout, tempo 'shot' commence à 0
     gl.tempoDict.update()
 
-def change_socle_position():
-    """socle position au centre = 0, 0, -6"""
+def glissement_socle():
+    """ y = random -2 à 4
+    si y = -2:
+                x = 0
+                z = -3.2
+    si y = 1:
+                x = -1.3 à 1.3
+                z =   -1.7 à 1.9
+    si y = 4 :
+                x = -2.5 à 2.5
+                z = -3.2 à 2.8
+    2.5/6 = 0.416
+    """
 
-    x = uniform(-4, 4)
-    y = uniform(1, 10)
-    z = uniform(-4, 3)
+    # Position rnd sur y
+    # Perspective
+    gl.y = uniform(-2, 4)
+    gl.x = 0.5 * uniform(-(0.8 + gl.y*0.416), 0.8 + gl.y/0.416)
+    gl.z = 0.5 * uniform(-3.2 , gl.y - 1.2) - 1
 
-    gl.socle.worldPosition[0] = x
-    gl.socle.worldPosition[1] = y
-    gl.socle.worldPosition[2] = z
+    # J'applique
+    gl.socle.worldPosition[0] = gl.x
+    gl.socle.worldPosition[1] = gl.y
+    gl.socle.worldPosition[2] = gl.z
 
 def rotation_socle():
     angle = uniform(-gl.rotation_socle, gl.rotation_socle)
     xyz = gl.socle.localOrientation.to_euler()
     xyz[1] = math.radians(angle)
     gl.socle.worldOrientation = xyz.to_matrix()
-
-def glissement_socle():
-    """Y = random
-    coeff sur x et z pour avoir des varitions mais pas trop
-    TODO: calcul stupide !
-    si y = -1: x = -0.7 à 0.7, z = 1.25 à 0.6
-    si y = 5 : x = -3.5 à 3.5, z = -6.25 à - 3.1
-    """
-
-    # Position au hazard sur y
-    gl.y = uniform(-1, 5)
-
-    # x et z dépendent de y
-    gl.x = 0.70 * gl.y * uniform(-1, 1)
-    gl.z = 0.50 * gl.y * uniform(-2.5, -1.2)
-
-    # J'applique
-    gl.socle.worldPosition[0] = gl.x
-    gl.socle.worldPosition[1] = gl.y
-    gl.socle.worldPosition[2] = gl.z
 
 def end():
     if gl.numero == gl.nombre_shot_total:
@@ -125,8 +121,14 @@ def get_angles(chars):
     return angles
 
 def get_chars():
-    chars = gl.text_str[gl.lettre]
-    chars = chars.lower()
+    try:
+        chars = gl.text_str[gl.lettre]
+        chars = chars.lower()
+    except:
+        gl.lettre = 0
+        chars = gl.text_str[gl.lettre]
+        chars = chars.lower()
+
     gl.lettre += 1
     return chars
 
@@ -152,3 +154,14 @@ def get_name_file_shot():
                         '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
 
     return gl.name_file_shot
+
+# #def change_socle_position():
+    # #"""socle position au centre = 0, 0, -6"""
+
+    # #x = uniform(-4, 4)
+    # #y = uniform(1, 10)
+    # #z = uniform(-4, 3)
+
+    # #gl.socle.worldPosition[0] = x
+    # #gl.socle.worldPosition[1] = y
+    # #gl.socle.worldPosition[2] = z

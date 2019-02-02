@@ -109,8 +109,8 @@ class Menu(SemaphoreConfig):
 
             elif choice == "3":  # Compression
                 print("\nCompression des images de shots")
-                train, test, size = 60000, 10000, 40
-                sc = ShotsCompression(self.root, train, test, size)
+                train, test, size, gray = 60000, 10000, 40, 0
+                sc = ShotsCompression(self.root, train, test, size, gray)
                 sc.create_semaphore_npz()
                 clear()
                 self.menu()
