@@ -18,25 +18,24 @@
 
 
 """
-Je crée le dossier ./shot_resize
+Je crée le dossier ./training_shot_resized
 
-Je lis le dossier /media/data/3D/projets/semaphore/shot_NB,
+Je lis le dossier /media/data/3D/projets/semaphore/training_shot,
         les sous dossiers, les images de chaque sous-dossier,
-        ex /media/data/3D/projets/semaphore/shot_NB/shot_000/shot_0_a.png
+        ex /media/data/3D/projets/semaphore/training_shot/shot_000/shot_0_a.png
 
 Pour chaque image *.png,
     je lis
     verif_shot_integrity avec TAILLE_MINI_FICHIER_IMAGE
     convertit en 40x40
-    enregistre dans ./shot_resize/shot_0xx/
-        avec le même nom soit ./shot_resize/shot_0xx/shot_0_a.png
+    enregistre dans ./training_shot_resized/shot_0xx/
+        avec le même nom soit ./training_shot_resized/shot_0xx/shot_0_a.png
 """
 
 
 import os
 import numpy as np
 import cv2
-import threading
 
 # Mes outils personnels
 # à https://ressources.labomedia.org/pymultilame
@@ -63,49 +62,42 @@ class ResizeBlur:
         print("Current directory:", self.root)
 
         # Le terrain de jeu
-        self.create_shot_resize_dir()
+        self.create_training_shot_resized_dir()
 
         # Liste
         self.shot_list = self.get_shot_list()
 
         self.create_sub_folders()
 
-        # display
-        self.disp = True
-        # Image Blender 320x320 non modifiable
-        self.img_in = np.zeros((320, 320), dtype=np.uint8)
-        self.img_out = np.zeros((self.size, self.size), dtype=np.uint8)
-        self.display_thread()
+    def create_training_shot_resized_dir(self):
 
-    def create_shot_resize_dir(self):
-
-        directory = self.root + "/shot_resize"
-        print("Dossier shot_resize:", directory)
+        directory = self.root + "/training_shot_resized"
+        print("Dossier training_shot_resized:", directory)
         self.tools.create_directory(directory)
 
     def create_sub_folders(self):
         """Création de n dossiers shot_000
         """
         # Nombre de dossiers nécessaires
-        n = len(self.tools.get_all_sub_directories(self.root + "/shot_NB/")) -1
+        n = len(self.tools.get_all_sub_directories(self.root + "/training_shot/")) -1
         print("Nombre de sous répertoires", n)
         for i in range(n):
-            directory = self.root + "/shot_resize" + '/shot_' + str(i).zfill(3)
+            directory = self.root + "/training_shot_resized" + '/shot_' + str(i).zfill(3)
             self.tools.create_directory(directory)
 
     def get_new_name(self, shot):
         """ de
-        /media/data/3D/projets/semaphore/shot_NB/shot_000/shot_0_a.png
+        /media/data/3D/projets/semaphore/training_shot/shot_000/shot_0_a.png
         à
-        /media/data/3D/projets/semaphore/shot_resize/shot_000/shot_0_a.png
+        /media/data/3D/projets/semaphore/training_shot_resized/shot_000/shot_0_a.png
         j'ai
-        /media/data/3D/projets/semaphore/shot_resize/shot_000/shot_3921_h.png
+        /media/data/3D/projets/semaphore/training_shot_resized/shot_000/shot_3921_h.png
         """
 
-        t = shot.partition("shot_NB")
-        # t = ('/media/data/3D/projets/semaphore/', 'shot_NB',
+        t = shot.partition("training_shot")
+        # t = ('/media/data/3D/projets/semaphore/', 'training_shot',
         #                                       '/shot_000/shot_1054_s.png')
-        name = self.root  + "/shot_resize" + t[2]
+        name = self.root  + "/training_shot_resized" + t[2]
 
         return name
 
@@ -130,6 +122,8 @@ class ResizeBlur:
         """Liste des images, lecture, conversion, save"""
 
         i = 0
+        cv2.namedWindow('Image In')
+        cv2.namedWindow('Image Out')
         # Pour chaque image
         for shot in self.shot_list:
             # Lecture
@@ -145,39 +139,26 @@ class ResizeBlur:
             img_out = self.apply_blur(img_out, self.blur)
 
             # Affichage
-            if i % 100 == 0:
+            if i % 500 == 0:
                 print(i)
-                self.img_in = img
-                self.img_out = self.change_resolution(img_out, 600, 600)
+                imgB = self.change_resolution(img_out, 600, 600)
+                cv2.imshow('Image In', img)
+                cv2.imshow('Image Out', imgB)
+                cv2.waitKey(1)
             i += 1
 
             # Save
             new_shot = self.get_new_name(shot)
             cv2.imwrite(new_shot, img_out)
 
-        # Fin du thread
-        self.disp = False
-
-    def display_thread(self):
-        t = threading.Thread(target=self.display)
-        t.start()
-
-    def display(self):
-        cv2.namedWindow('Image In')
-        cv2.namedWindow('Image Out')
-        while self.disp:
-            cv2.imshow('Image In', self.img_in)
-            cv2.imshow('Image Out', self.img_out)
-            # Echap
-            if cv2.waitKey(33) == 27:
-                break
         cv2.destroyAllWindows()
+
 
     def get_shot_list(self):
         """Liste des images"""
 
         # Liste
-        shot = self.root + "/shot_NB"
+        shot = self.root + "/training_shot"
         shot_list = self.tools.get_all_files_list(shot, ".png")
 
         print("Dossier des images NB:", shot)
@@ -194,9 +175,9 @@ class ResizeBlur:
 if __name__ == "__main__":
 
     SIZE = 40
-    BLUR = 2
+    BLUR = 4
 
-    print("ResizeBlur de toutes les images dans le dossier shot")
+    print("ResizeBlur de toutes les images dans le dossier training_shot")
     root = MyTools().get_absolute_path(__file__)[:-27]
     print("Current directory:", root)
     rsz = ResizeBlur(root, SIZE, BLUR)

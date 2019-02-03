@@ -99,7 +99,7 @@ def create_directories():
     print("Chemin de semaphore:", root)
 
     # Dossier d'enregistrement des images
-    gl.shot_directory = root + '/shot_NB'
+    gl.shot_directory = root + '/training_shot'
 
     # Si le dossier n'existe pas, je le crée
     mt = MyTools()

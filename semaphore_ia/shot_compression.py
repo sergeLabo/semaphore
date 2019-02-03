@@ -17,7 +17,7 @@
 ########################################################################
 
 """
-Lit les images dans shot_resize
+Lit les images dans training_shot_resized
 Convertit en une ligne
 Convertit le gris de 0 à 1
 Ajoute la lettre de l'image
@@ -34,7 +34,6 @@ size = 40
 import os
 import numpy as np
 import cv2
-import threading
 
 from pymultilame import MyTools
 
@@ -88,16 +87,11 @@ class ShotsCompression:
         self.labels = np.zeros((self.train), dtype=np.uint8)
         self.labels_test = np.zeros((self.test), dtype=np.uint8)
 
-        # Display
-        self.disp = True
-        self.img = np.zeros((self.size, self.size), dtype=np.uint8)
-        self.display_thread()
-
     def get_images_list(self):
-        """Liste de toutes les images dans shot_resize avec leurs chemin absolu
+        """Liste de toutes les images dans training_shot_resized avec leurs chemin absolu
         """
 
-        a = self.root + 'shot_resize/'
+        a = self.root + '/training_shot_resized/'
         print("Dossier des images:", a)
 
         self.images_list = self.mytools.get_all_files_list(a, ".png")
@@ -120,12 +114,18 @@ class ShotsCompression:
         concatenate dans un gros array
         enregistrement
         """
-        i = 0
 
+        i = 0
+        cv2.namedWindow('Image')
         for f in self.images_list:
             # Lecture de l'image f
             img = cv2.imread(f, 0)
-            self.mangalore(i, img)
+
+            if i % 2000 == 0:
+                print(i)
+                imgB = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
+                cv2.imshow('Image', imgB)
+                cv2.waitKey(1)
 
             # Conversion du gris 0 à 255 en 0 à 1
             # img = np.reshape() / 255.0
@@ -146,15 +146,8 @@ class ShotsCompression:
                 self.labels_test[i - self.train] =  label
             i += 1
 
+        cv2.destroyAllWindows()
         self.save_train()
-        # Fin du thread
-        self.disp = False
-
-    def mangalore(self, i, img):
-        # Affichage pour faire patienter les mondoshawans et les mangalores
-        if i % 1000 == 0:
-            print(i)
-            self.img = img.copy()
 
     def save_train(self):
         """Enregistre les arrays images et labels dans un fichier compressé
@@ -163,7 +156,7 @@ class ShotsCompression:
         y_train = labels = 60000x1
         """
 
-        outfile = self.root + 'semaphore.npz'
+        outfile = self.root + '/semaphore.npz'
         np.savez_compressed(outfile, **{"x_train": self.images,
                              "y_train": self.labels,
                              "x_test":  self.images_test,
@@ -171,23 +164,10 @@ class ShotsCompression:
 
         print('Fichier compressé =', outfile, '\n\n\n')
 
-    def display_thread(self):
-        t = threading.Thread(target=self.display)
-        t.start()
-
-    def display(self):
-        cv2.namedWindow('Image')
-        while self.disp:
-            cv2.imshow('Image', self.img)
-            # Echap
-            if cv2.waitKey(33) == 27:
-                break
-        cv2.destroyAllWindows()
-
 
 if __name__ == "__main__":
     print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-32]
+    root = MyTools().get_absolute_path(__file__)[:-33]
     print("Current directory:", root)
 
     train, test, size, gray = 60000, 10000, 40, 0
