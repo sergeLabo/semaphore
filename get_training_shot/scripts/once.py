@@ -42,11 +42,14 @@ def get_conf():
     """Récupère la configuration depuis le fichier *.ini."""
 
     # Le dossier courrant est le dossier dans lequel est le *.blend
-    gl.current_dir = gl.expandPath('//')
-    print('Dossier courant depuis once.py {}'.format(gl.current_dir))
+    current_dir = gl.expandPath('//')
+    # /media/data/3D/projets/semaphore/get_training_shot/
+    print('Dossier courant depuis once.py {}'.format(current_dir))
+
+    gl.current_dir = current_dir[:-18]
 
     # Configuration dans *.ini
-    gl.ma_conf = MyConfig(gl.current_dir + "scripts/semaphore.ini")
+    gl.ma_conf = MyConfig(current_dir + "scripts/semaphore.ini")
     gl.conf = gl.ma_conf.conf
 
     print("\nConfiguration du jeu semaphore:")
@@ -94,6 +97,7 @@ def create_directories():
 
     # Dossier d'enregistrement des images
     gl.shot_directory = gl.current_dir + 'training_shot'
+    print("Dossier des shots:", gl.shot_directory)
 
     # Si le dossier n'existe pas, je le crée
     mt = MyTools()
@@ -115,7 +119,7 @@ def set_tempo():
 
 def get_texte():
     # Récup des textes du dossier texte
-    dossier = gl.current_dir + 'scripts/texte/'
+    dossier = gl.current_dir + '/get_training_shot/scripts/texte/'
 
     # Le texte à lire
     gl.text_str = get_text_str_from_blender(dossier)
