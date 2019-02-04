@@ -34,7 +34,7 @@ from time import sleep
 # Mon module perso: voir le readme pour install
 from pymultilame import MyTools, MyConfig
 
-from semaphore_ia.ia import SemaphoreIA
+from semaphore_ia.train_semaphore import int_art
 from semaphore_ia.shot_compression import ShotsCompression
 from resize_blur.resize_blur import ResizeBlur
 
@@ -43,8 +43,8 @@ menu_1 = """\n\n    Menu principal
         Choisir 1 pour créer les images NB 320x320
         Choisir 2 pour retailler les images
         Choisir 3 pour créer le fichier compressé des images
-        Choisir 4 pour excécuter l'apprentissage de l'IA
-        Choisir 5 pour tester l'IA
+        Choisir 4 pour excécuter et tester l'apprentissage de l'IA
+        Choisir 5 pour rien
         Choisir 6 pour modifier la configuration
         Choisir 0 pour quitter
         """
@@ -116,21 +116,15 @@ class Menu(SemaphoreConfig):
                 self.menu()
 
             elif choice == "4":  # IA training
-                print("\nApprentissage")
-                size = 40
-                learning_rate = 0.2
-                sia = SemaphoreIA(self.root, size, learning_rate)
-                sia.ia_training()
+                print("\nApprentissage et test de l'IA")
+                learning_rate = 0.05
+                res = int_art(self.root, learning_rate)
+                sleep(10)
                 clear()
                 self.menu()
 
             elif choice == "5":  # IA testing
-                print("\nTest de l'IA")
-                size = 40
-                learning_rate = 0.2
-                sia = SemaphoreIA(self.root, size, learning_rate)
-                sia.ia_testing()
-                sleep(10)
+                print("\nrien")
                 clear()
                 self.menu()
 

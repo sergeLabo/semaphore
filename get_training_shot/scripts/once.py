@@ -32,7 +32,6 @@ from bge import texture
 from bge import render
 
 from pymultilame import blendergetobject
-
 from pymultilame import Tempo, MyConfig, MyTools
 
 from scripts.get_texte import get_text_str_from_blender

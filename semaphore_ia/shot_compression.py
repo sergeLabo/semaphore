@@ -167,7 +167,7 @@ class ShotsCompression:
 
 if __name__ == "__main__":
     print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-33]
+    root = MyTools().get_absolute_path(__file__)[:-32]
     print("Current directory:", root)
 
     train, test, size, gray = 60000, 10000, 40, 0

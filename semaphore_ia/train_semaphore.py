@@ -1,16 +1,17 @@
 import numpy as np
 import cv2
+from pymultilame import MyTools
 
 def sigmoid(x): return 1 / (1 + np.exp(-x))
 def sigmoid_prime(z): return z * (1 - z)
 def relu(x): return np.maximum(0, x)
 def relu_prime(z): return np.asarray(z > 0, dtype=np.float32)
 
-def int_art(learningrate):
+def int_art(root, learningrate):
     layers = [1600, 100, 100, 27]
     activations = [relu, relu, sigmoid]
 
-    f = np.load('/media/data/3D/projets/semaphore/semaphore.npz')
+    f = np.load(root + '/semaphore.npz')
     x_train, y_train = f['x_train'], f['y_train']
     x_train = 1 - x_train
     x_test, y_test = x_train[50000:,:], y_train[50000:]
@@ -54,13 +55,10 @@ def int_art(learningrate):
     return res
 
 if __name__ == "__main__":
-    # #all_res = []
-    # #for learningrate in [0.005, 0.01, 0.02, 0.05, 0.1, 0.2]:
-        # #res = int_art(learningrate)
-        # #all_res.append((learningrate, res))
-    # #for r in all_res:
-        # #print("Learningrate", r[0], "Résultat", r[1])
+    print(MyTools().get_absolute_path(__file__))
+    root = MyTools().get_absolute_path(__file__)[:-32]
+    print("Current directory:", root)
 
     learningrate = 0.05
-    res = int_art(learningrate)
+    res = int_art(root, learningrate)
     print("Learningrate", learningrate, "Résultat", res)
