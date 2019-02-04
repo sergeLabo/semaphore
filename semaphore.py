@@ -94,7 +94,7 @@ class Menu(SemaphoreConfig):
 
             if choice == "1":  # Blender
                 print("Création des images 320x320 en NB")
-                blend = self.root + '/game_NB/semaphore_NB.blend'
+                blend = self.root + 'get_training_shot/get_training_shot.blend'
                 pop = ['xterm', '-e', 'blenderplayer', blend]
                 # shell=True ok pour linux seul
                 p = subprocess.Popen(pop, shell=False)

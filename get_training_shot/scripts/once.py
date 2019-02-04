@@ -92,13 +92,8 @@ def create_directories():
     """
     mt = MyTools()
 
-    # Le blend est dans ./semaphore/game_NB = dossier courrant
-    # /semaphore/game_NB/scripts
-    root = mt.get_absolute_path(__file__)[:-24]
-    print("Chemin de semaphore:", root)
-
     # Dossier d'enregistrement des images
-    gl.shot_directory = root + '/training_shot'
+    gl.shot_directory = gl.current_dir + 'training_shot'
 
     # Si le dossier n'existe pas, je le crée
     mt = MyTools()

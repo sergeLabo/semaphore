@@ -65,13 +65,21 @@ def glissement_socle():
                 x = -2.5 à 2.5
                 z = -3.2 à 2.8
     2.5/6 = 0.416
-    """
 
-    # Position rnd sur y
+    pour 1er grand test: 90.6 %
     # Perspective
     gl.y = uniform(-2, 4)
-    gl.x = 0.5 * uniform(-(0.8 + gl.y*0.416), 0.8 + gl.y/0.416)
+    gl.x = 0.5 * uniform(-(0.8 + gl.y*0.416), 0.8 + gl.y*0.416)
     gl.z = 0.5 * uniform(-3.2 , gl.y - 1.2) - 1
+
+    pour 2ème test:  %
+
+    """
+
+    # Perspective
+    gl.y = uniform(-2, 4)
+    gl.x = 0.8 * uniform(-(1.8 + gl.y*0.416), 0.7 + gl.y*0.416)
+    gl.z = 0.5 * uniform(-4 , gl.y - 1.2) - 1.3
 
     # J'applique
     gl.socle.worldPosition[0] = gl.x
