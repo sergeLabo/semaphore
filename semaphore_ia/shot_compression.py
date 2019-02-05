@@ -91,7 +91,7 @@ class ShotsCompression:
         """Liste de toutes les images dans training_shot_resized avec leurs chemin absolu
         """
 
-        a = self.root + '/training_shot_resized/'
+        a = self.root + 'training_shot_resized/'
         print("Dossier des images:", a)
 
         self.images_list = self.mytools.get_all_files_list(a, ".png")

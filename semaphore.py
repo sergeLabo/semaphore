@@ -22,6 +22,7 @@ Lance en terminal les différentes étapes
 menu avec choix
     1 - Lance blender pour créer les images NB 320x320
 
+Result: 92.94   4 fev 16:19
 
 
 """
@@ -82,12 +83,16 @@ class Menu(SemaphoreConfig):
 
     def __init__(self):
         super().__init__()
+        self.result = 0
+        clear()
 
     def menu(self):
         global menu_1
 
         choice ='0'
         while choice == '0':
+            if self.result:
+                print("Result:", self.result)
             print(menu_1)
 
             choice = input("Votre choix: ")
@@ -95,9 +100,14 @@ class Menu(SemaphoreConfig):
             if choice == "1":  # Blender
                 print("Création des images 320x320 en NB")
                 blend = self.root + 'get_training_shot/get_training_shot.blend'
-                pop = ['xterm', '-e', 'blenderplayer', blend]
-                # shell=True ok pour linux seul
-                p = subprocess.Popen(pop, shell=False)
+
+                # pb fini le script
+                p = subprocess.run(["xterm",
+                                    "-e",
+                                    "blenderplayer",
+                                    blend],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
 
             elif choice == "2":  # resize
                 print("Resize en 40x40 et blur des images du 1")
@@ -118,8 +128,7 @@ class Menu(SemaphoreConfig):
             elif choice == "4":  # IA training
                 print("\nApprentissage et test de l'IA")
                 learning_rate = 0.05
-                res = int_art(self.root, learning_rate)
-                sleep(10)
+                self.result = int_art(self.root, learning_rate)
                 clear()
                 self.menu()
 

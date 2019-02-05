@@ -153,7 +153,6 @@ class ResizeBlur:
 
         cv2.destroyAllWindows()
 
-
     def get_shot_list(self):
         """Liste des images"""
 

@@ -12,6 +12,7 @@ video/
 langage_semaphore/
 training_shot_resized/
 shots/
+failed/
 *.npz
 *.npy
 

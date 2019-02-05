@@ -85,7 +85,7 @@ def second_ia():
     size = 40  # fixe
     for gray in [0, 1]:
         all_res[gray] = {}
-        for blur in [6, 7, 8]:  #[0, 1, 2, 3, 4, 5]:
+        for blur in [0, 1, 2, 3, 4, 5]:
             all_res[gray][blur] = []
             # resize blur
             rb = ResizeBlur(root, size, blur)

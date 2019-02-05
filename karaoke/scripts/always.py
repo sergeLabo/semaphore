@@ -16,9 +16,13 @@
 #
 ########################################################################
 
-'''
+"""
 Lancé à chaque frame durant tout le jeu.
-'''
+
+Jeu karaoke
+
+
+"""
 
 
 from bge import logic as gl

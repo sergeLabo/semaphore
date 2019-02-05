@@ -72,14 +72,23 @@ def glissement_socle():
     gl.x = 0.5 * uniform(-(0.8 + gl.y*0.416), 0.8 + gl.y*0.416)
     gl.z = 0.5 * uniform(-3.2 , gl.y - 1.2) - 1
 
-    pour 2ème test:  %
+    pour 2ème test:  93.15% allongé 20%
+    # Perspective angle 8°caméra focal 35
+    gl.y = uniform(-2, 4)
+    gl.x = 0.8 * uniform(-(1.8 + gl.y*0.416), 0.7 + gl.y*0.416)
+    gl.z = 0.5 * uniform(-4 , gl.y - 1.2) - 1.3
 
+    pour 3ème test: angle 8° mât aggrandi, bras central allongé
+    # Perspective angle 8°caméra focal 30
+    gl.y = uniform(-2, 4)
+    gl.x = 1.0 * uniform(-(1.8 + gl.y*0.416), 0.7 + gl.y*0.416)
+    gl.z = 0.8 * uniform(-4 , gl.y - 0.2) - 3
     """
 
     # Perspective
     gl.y = uniform(-2, 4)
-    gl.x = 0.8 * uniform(-(1.8 + gl.y*0.416), 0.7 + gl.y*0.416)
-    gl.z = 0.5 * uniform(-4 , gl.y - 1.2) - 1.3
+    gl.x = 1.0 * uniform(-(1.8 + gl.y*0.416), 0.7 + gl.y*0.416)
+    gl.z = 0.8 * uniform(-4 , gl.y - 0.2) - 3
 
     # J'applique
     gl.socle.worldPosition[0] = gl.x
