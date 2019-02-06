@@ -106,17 +106,10 @@ def end():
         gl.endGame()
 
 def display(chars):
-    """Affichage de la lettre par rotation des bras.
-    Variations des angles avec random
-    """
+    """Affichage de la lettre par rotation des bras."""
 
     # 180, 90, 0
     angles = get_angles(chars)
-
-    # Variation sur les angles
-    # #angles[0] = angles[0] + uniform(-10, 10)
-    # #angles[1] = angles[1] + uniform(-10, 10)
-    # #angles[2] = angles[2] + uniform(-10, 10)
 
     xyz = gl.bras_central.worldOrientation.to_euler()
     xyz[1] = math.radians(angles[0])

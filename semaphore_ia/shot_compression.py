@@ -91,7 +91,7 @@ class ShotsCompression:
         """Liste de toutes les images dans training_shot_resized avec leurs chemin absolu
         """
 
-        a = self.root + 'training_shot_resized/'
+        a = self.root + '/training_shot_resized/'
         print("Dossier des images:", a)
 
         self.images_list = self.mytools.get_all_files_list(a, ".png")
@@ -121,7 +121,7 @@ class ShotsCompression:
             # Lecture de l'image f
             img = cv2.imread(f, 0)
 
-            if i % 2000 == 0:
+            if i % 10000 == 0:
                 print(i)
                 imgB = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
                 cv2.imshow('Image', imgB)
@@ -167,7 +167,7 @@ class ShotsCompression:
 
 if __name__ == "__main__":
     print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-32]
+    root = MyTools().get_absolute_path(__file__)[:-33]
     print("Current directory:", root)
 
     train, test, size, gray = 60000, 10000, 40, 0

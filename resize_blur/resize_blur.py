@@ -138,8 +138,8 @@ class ResizeBlur:
             # Flou
             img_out = self.apply_blur(img_out, self.blur)
 
-            # Affichage
-            if i % 500 == 0:
+            # ## Affichage
+            if i % 10000 == 0:
                 print(i)
                 imgB = self.change_resolution(img_out, 600, 600)
                 cv2.imshow('Image In', img)
@@ -174,7 +174,7 @@ class ResizeBlur:
 if __name__ == "__main__":
 
     SIZE = 40
-    BLUR = 4
+    BLUR = 5
 
     print("ResizeBlur de toutes les images dans le dossier training_shot")
     root = MyTools().get_absolute_path(__file__)[:-27]

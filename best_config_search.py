@@ -84,8 +84,10 @@ def second_ia():
 
     size = 40  # fixe
     for gray in [0, 1]:
+        print("gray", gray)
         all_res[gray] = {}
-        for blur in [0, 1, 2, 3, 4, 5]:
+        for blur in [0, 1, 2, 3, 4, 5, 6]:
+            print("blur", blur)
             all_res[gray][blur] = []
             # resize blur
             rb = ResizeBlur(root, size, blur)
@@ -98,9 +100,10 @@ def second_ia():
             sc.create_semaphore_npz()
             del sc
 
-            for learningrate in [0.001, 0.003, 0.005, 0.01, 0.02, 0.04,
-                                 0.05, 0.06, 0.07, 0.1, 0.2, 0.3, 0.4]:
-                res = int_art(learningrate)
+            for learningrate in [   0.01, 0.02, 0.03, 0.04,
+                                    0.05, 0.06, 0.07 ]:
+                print("learningrate", learningrate)
+                res = int_art(root, learningrate)
                 all_res[gray][blur].append([learningrate, res])
 
     print(all_res)
