@@ -15,6 +15,7 @@ shots/
 failed/
 *.npz
 *.npy
+training_shot.zip
 
 # Python test
 *_old.py

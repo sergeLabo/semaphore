@@ -31,10 +31,10 @@ sans avoir à les recharger dans Blender.
 """
 
 # imports locaux
-from scripts import once
+from scripts import get_training_shot_once
 
 
 def main():
     """Fonction lancée à chaque frame dans blender en temps que module."""
 
-    once.main()
+    get_training_shot_once.main()

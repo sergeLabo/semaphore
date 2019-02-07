@@ -49,7 +49,7 @@ def get_conf():
     gl.current_dir = current_dir[:-18]
 
     # Configuration dans *.ini
-    gl.ma_conf = MyConfig(current_dir + "scripts/semaphore.ini")
+    gl.ma_conf = MyConfig(current_dir + "scripts/get_training_shot.ini")
     gl.conf = gl.ma_conf.conf
 
     print("\nConfiguration du jeu semaphore:")

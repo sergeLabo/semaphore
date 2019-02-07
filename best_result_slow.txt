@@ -1,3 +1,14 @@
+Essai du 6 février 21h55
+
+Gray 0
+    Blur: 6
+        Learningrate: 0.016 Résultat:    95.03
+        Learningrate: 0.018 Résultat:    93.38
+        Learningrate: 0.02 Résultat:    96.59
+        Learningrate: 0.022 Résultat:    96.96
+        Learningrate: 0.024 Résultat:    94.85
+
+Essai du 5 février
 Gray 0
     Blur: 0
         Learningrate: 0.01 Résultat:    52.39

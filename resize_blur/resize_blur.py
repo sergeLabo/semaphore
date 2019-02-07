@@ -18,7 +18,7 @@
 
 
 """
-Je crée le dossier ./training_shot_resized
+Je crée le dossier training_shot_resized
 
 Je lis le dossier /media/data/3D/projets/semaphore/training_shot,
         les sous dossiers, les images de chaque sous-dossier,
@@ -28,8 +28,8 @@ Pour chaque image *.png,
     je lis
     verif_shot_integrity avec TAILLE_MINI_FICHIER_IMAGE
     convertit en 40x40
-    enregistre dans ./training_shot_resized/shot_0xx/
-        avec le même nom soit ./training_shot_resized/shot_0xx/shot_0_a.png
+    enregistre dans /training_shot_resized/shot_0xx/
+        avec le même nom soit /training_shot_resized/shot_0xx/shot_0_a.png
 """
 
 
@@ -71,7 +71,7 @@ class ResizeBlur:
 
     def create_training_shot_resized_dir(self):
 
-        directory = self.root + "/training_shot_resized"
+        directory = self.root + "training_shot_resized"
         print("Dossier training_shot_resized:", directory)
         self.tools.create_directory(directory)
 
@@ -79,10 +79,10 @@ class ResizeBlur:
         """Création de n dossiers shot_000
         """
         # Nombre de dossiers nécessaires
-        n = len(self.tools.get_all_sub_directories(self.root + "/training_shot/")) -1
+        n = len(self.tools.get_all_sub_directories(self.root + "training_shot/")) -1
         print("Nombre de sous répertoires", n)
         for i in range(n):
-            directory = self.root + "/training_shot_resized" + '/shot_' + str(i).zfill(3)
+            directory = self.root + "training_shot_resized" + '/shot_' + str(i).zfill(3)
             self.tools.create_directory(directory)
 
     def get_new_name(self, shot):
@@ -97,7 +97,7 @@ class ResizeBlur:
         t = shot.partition("training_shot")
         # t = ('/media/data/3D/projets/semaphore/', 'training_shot',
         #                                       '/shot_000/shot_1054_s.png')
-        name = self.root  + "/training_shot_resized" + t[2]
+        name = self.root  + "training_shot_resized" + t[2]
 
         return name
 
@@ -117,6 +117,12 @@ class ResizeBlur:
         if info < TAILLE_MINI_FICHIER_IMAGE:
             print("Intégrité - image à vérifier:", shot)
             os._exit(0)
+
+    def gray_to_BW(self, shot):
+        (threshi, img_bw) = cv2.threshold(shot,
+                                          0, 255,
+                                          cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        return img_bw
 
     def batch(self):
         """Liste des images, lecture, conversion, save"""
@@ -138,6 +144,9 @@ class ResizeBlur:
             # Flou
             img_out = self.apply_blur(img_out, self.blur)
 
+            # conversion en BW
+            #img_out = self.gray_to_BW(img_out)
+
             # ## Affichage
             if i % 10000 == 0:
                 print(i)
@@ -157,7 +166,7 @@ class ResizeBlur:
         """Liste des images"""
 
         # Liste
-        shot = self.root + "/training_shot"
+        shot = self.root + "training_shot"
         shot_list = self.tools.get_all_files_list(shot, ".png")
 
         print("Dossier des images NB:", shot)
@@ -174,10 +183,10 @@ class ResizeBlur:
 if __name__ == "__main__":
 
     SIZE = 40
-    BLUR = 5
+    BLUR = 6
 
     print("ResizeBlur de toutes les images dans le dossier training_shot")
-    root = MyTools().get_absolute_path(__file__)[:-27]
+    root = MyTools().get_absolute_path(__file__)[:-26]
     print("Current directory:", root)
     rsz = ResizeBlur(root, SIZE, BLUR)
     rsz.batch()

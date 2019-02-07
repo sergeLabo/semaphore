@@ -32,10 +32,10 @@ sans avoir à les recharger dans Blender.
 
 
 # imports locaux
-from scripts import always
+from scripts import get_training_shot_always
 
 
 def main():
     """Fonction lancée à chaque frame dans blender en temps que module."""
 
-    always.main()
+    get_training_shot_always.main()

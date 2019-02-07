@@ -91,7 +91,7 @@ class ShotsCompression:
         """Liste de toutes les images dans training_shot_resized avec leurs chemin absolu
         """
 
-        a = self.root + '/training_shot_resized/'
+        a = self.root + 'training_shot_resized/'
         print("Dossier des images:", a)
 
         self.images_list = self.mytools.get_all_files_list(a, ".png")
@@ -156,7 +156,7 @@ class ShotsCompression:
         y_train = labels = 60000x1
         """
 
-        outfile = self.root + '/semaphore.npz'
+        outfile = self.root + 'semaphore.npz'
         np.savez_compressed(outfile, **{"x_train": self.images,
                              "y_train": self.labels,
                              "x_test":  self.images_test,
@@ -167,7 +167,7 @@ class ShotsCompression:
 
 if __name__ == "__main__":
     print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-33]
+    root = MyTools().get_absolute_path(__file__)[:-32]
     print("Current directory:", root)
 
     train, test, size, gray = 60000, 10000, 40, 0

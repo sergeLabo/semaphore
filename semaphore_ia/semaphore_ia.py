@@ -23,6 +23,7 @@ Testing: Teste avec 10 000 images
 """
 
 
+import shutil
 import numpy as np
 import cv2
 from pymultilame import MyTools
@@ -43,18 +44,24 @@ def relu_prime(z):
 
 class SemaphoreIA:
 
-    def __init__(self, learningrate, root):
+    def __init__(self, root, learningrate, failed=0):
         self.root = root
         self.learningrate = learningrate
+        self.failed = failed
         self.tools = MyTools()
 
         # Dossier des ratés
-        self.tools.create_directory(self.root + '/failed')
+        if self.failed:
+            try:
+                shutil.rmtree(self.root + 'failed')
+            except:
+                print('Pas de dossier failed')
+            self.tools.create_directory(self.root + 'failed')
 
         self.layers = [1600, 100, 100, 27]
         self.activations = [relu, relu, sigmoid]
 
-        fichier = np.load(self.root + '/semaphore.npz')
+        fichier = np.load(self.root + 'semaphore.npz')
         self.x_train, self.y_train = fichier['x_train'], fichier['y_train']
         self.x_train = 1 - self.x_train
         self.x_test, self.y_test = self.x_train[50000:,:], self.y_train[50000:]
@@ -111,9 +118,9 @@ class SemaphoreIA:
                 weight_list[k] -= self.learningrate * delta_w
 
         # Dans un fichier
-        np.save(self.root + '/weights.npy', weight_list)
+        np.save(self.root + 'weights.npy', weight_list)
         print('weights.npy enregistré')
-        cv2.destroyAll()
+        cv2.destroyAllWindows()
 
     def testing(self):
         """Teste avec 10 000 images, retourne le ratio de bon résultats
@@ -121,7 +128,7 @@ class SemaphoreIA:
 
         print("Testing...")
 
-        weight_list = np.load(self.root + '/weights.npy')
+        weight_list = np.load(self.root + 'weights.npy')
 
         # Nombre de bonnes reconnaissance
         success = 0
@@ -140,30 +147,31 @@ class SemaphoreIA:
             if reconnu == nombre_lettre:
                 success += 1
             else:
-                self.write_failed(img, nombre_lettre, reconnu, success)
+                if self.failed:
+                    self.write_failed(img, nombre_lettre, reconnu, success)
                 if nombre_lettre in failed_dict:
                     failed_dict[nombre_lettre] += 1
                 else:
-                    failed_dict[nombre_lettre] = 1
+                    if self.failed:
+                        self.tools.create_directory(self.root + 'failed' + '/bad_' + str(nombre_lettre))
+                        failed_dict[nombre_lettre] = 1
 
-        sorted_by_value = sorted(failed_dict.items(), key=lambda kv: kv[1], reverse=True)
-        print(sorted_by_value)
+        if self.failed:
+            sorted_by_value = sorted(failed_dict.items(), key=lambda kv: kv[1], reverse=True)
+            print(sorted_by_value)
 
         res = 100.0 * success / len(self.x_test)
-        print("Accuracy: {}%".format(round(res, 1)))
+        #print("Accuracy: {}%".format(round(res, 1)))
         return res
 
-    def write_failed(self, img, d, reconnu, S):
+    def write_failed(self, img, nombre_lettre, reconnu, S):
         """Les images avec erreur de reconnaisance sont copiées dans
         /semaphore/failed/bad_11/11_6_9067.png
         11 est la lettre k, donc dans le dossier il ny a que la lettre k
         et le 2ème nombre est la lettre reconnue fausse
         """
-        name = str(d) + '_' + str(reconnu) + '_'  + str(S) + '.png'
-        mt = MyTools()
-        mt.create_directory(self.root + '/failed' + '/bad_' + str(d))
-        fichier = self.root + '/failed' + '/bad_' + str(d) + '/' + name
-        print(fichier)
+        name = str(nombre_lettre) + '_' + str(reconnu) + '_'  + str(S) + '.png'
+        fichier = self.root + 'failed' + '/bad_' + str(nombre_lettre) + '/' + name
         img = img.reshape(40,40) * 255
         cv2.imwrite(fichier, img)
 
@@ -171,11 +179,12 @@ class SemaphoreIA:
 if __name__ == "__main__":
 
     print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-29]
+    root = MyTools().get_absolute_path(__file__)[:-28]
     print("Current directory:", root)
 
-    learningrate = 0.02
-    sia = SemaphoreIA(learningrate, root)
+    learningrate = 0.022
+    failed = 0
+    sia = SemaphoreIA(root, learningrate, failed)
     #sia.training()
     resp = sia.testing()
     print("Learningrate", learningrate, "Résultat", resp)
