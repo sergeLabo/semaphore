@@ -97,6 +97,7 @@ class Menu(SemaphoreConfig):
         self.test = self.conf['ia']['testing']
         self.size = self.conf['ia']['size']
         self.gray = self.conf['ia']['gray']
+        self.failed = self.conf['ia']['failed']
 
     def menu(self):
         global menu_1
@@ -145,7 +146,7 @@ class Menu(SemaphoreConfig):
 
             elif choice == "5":  # IA testing
                 print("\nTest de l'IA")
-                sia = SemaphoreIA(self.root, self.learning_rate)
+                sia = SemaphoreIA(self.root, self.learning_rate, self.failed)
                 self.result = sia.testing()
                 clear()
                 self.menu()

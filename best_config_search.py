@@ -37,10 +37,10 @@ def improve_ia():
     all_res = {}
 
     size = 40  # fixe
-    for gray in [0]:  #, 1]:
+    for gray in [0, 1]:
         print("gray", gray)
         all_res[gray] = {}
-        for blur in [6]:  #[0, 1, 2, 3, 4, 5, 6]:
+        for blur in [0, 1, 2, 3, 4, 5, 6]:
             print("blur", blur)
             all_res[gray][blur] = []
             # resize blur
@@ -54,14 +54,14 @@ def improve_ia():
             sc.create_semaphore_npz()
             del sc
 
-            for learningrate in [0.016, 0.018, 0.02, 0.022, 0.024]:
+            for learningrate in [0.0210, 0.0215, 0.0220, 0.0225, 0.0230]:
                 print("learningrate", learningrate)
-                sia = SemaphoreIA(root, learningrate)
+                failed = 0
+                sia = SemaphoreIA(root, learningrate, failed)
                 sia.training()
                 res = sia.testing()
                 all_res[gray][blur].append([learningrate, res])
 
-    print(all_res)
     for key, val in all_res.items():
         print("Gray", key)
         for k, v_l in val.items():
