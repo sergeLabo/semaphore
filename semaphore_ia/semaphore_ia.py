@@ -74,10 +74,17 @@ def relu_prime(z):
 class SemaphoreIA:
     """Réseau de neuronnes Perceptron multicouches."""
 
-    def __init__(self, root, learningrate, failed=0):
+    def __init__(self, root, learningrate, failed=0, imshow=1):
+        """ root = dossier semaphore
+            learningrate = coeff important
+            failed = 0 ou 1, pour analyse des ratés
+            imshow = 0 ou 1 pour affichage d'image ou non pendant l'exécution
+        """
+
         self.root = root
         self.learningrate = learningrate
         self.failed = failed
+        self.imshow = imshow
         self.tools = MyTools()
 
         # Dossier des ratés
@@ -101,7 +108,8 @@ class SemaphoreIA:
         self.x_train, self.y_train = self.x_train[:50000,:], self.y_train[:50000]
 
         # Affichage des images pour distraire
-        cv2.namedWindow('img')
+        if self.imshow:
+            cv2.namedWindow('img')
 
     def training(self):
         """Apprentissage avec 60 000 images
@@ -132,12 +140,13 @@ class SemaphoreIA:
 
             # Affichage pour distraire les mangalore
             # TODO: mettre ça dans un truc à l'ext de cette méthode
-            if i % 10000 == 0:
-                print(i, nombre_lettre)
-                img = vecteur_ligne.reshape(40,40) * 255
-                img = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
-                cv2.imshow("img", img)
-                cv2.waitKey(1)
+            if self.imshow:
+                if i % 10000 == 0:
+                    print(i, nombre_lettre)
+                    img = vecteur_ligne.reshape(40,40) * 255
+                    img = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
+                    cv2.imshow("img", img)
+                    cv2.waitKey(1)
 
             # la ligne devient colonne
             vecteur_colonne = np.array(vecteur_ligne, ndmin=2).T
@@ -171,6 +180,7 @@ class SemaphoreIA:
         np.save(self.root + 'weights.npy', weight_list)
         print('weights.npy enregistré')
         cv2.destroyAllWindows()
+        return weight_list
 
     def testing(self):
         """Teste avec 10 000 images, retourne le ratio de bon résultats"""
@@ -232,11 +242,18 @@ if __name__ == "__main__":
     root = MyTools().get_absolute_path(__file__)[:-28]
     print("Current directory:", root)
 
-    for i in range(5):
-        print("Petit test de l'influence du random dans la liste des poids")
-        learningrate = 0.022
-        failed = 0
-        sia = SemaphoreIA(root, learningrate, failed)
-        sia.training()
-        resp = sia.testing()
-        print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))
+    # #for i in range(5):
+        # #print("Petit test de l'influence du random dans la liste des poids")
+        # #learningrate = 0.022
+        # #failed = 0
+        # #sia = SemaphoreIA(root, learningrate, failed, imshow=0)
+        # #sia.training()
+        # #resp = sia.testing()
+        # #print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))
+
+    learningrate = 0.022
+    failed = 0
+    sia = SemaphoreIA(root, learningrate, failed, imshow=0)
+    sia.training()
+    resp = sia.testing()
+    print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))

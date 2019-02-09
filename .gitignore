@@ -16,6 +16,7 @@ failed/
 *.npz
 *.npy
 training_shot.zip
+weights/
 
 # Python test
 *_old.py

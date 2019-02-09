@@ -34,6 +34,8 @@ Pour chaque image *.png,
 
 
 import os
+import shutil
+from datetime import datetime
 import numpy as np
 import cv2
 
@@ -43,21 +45,27 @@ from pymultilame import MyTools
 
 TAILLE_MINI_FICHIER_IMAGE = 999
 
-
 class ResizeBlur:
 
-    def __init__(self, root, size, blur):
+    def __init__(self, root, size, blur, imshow=0):
+        """ root = dossier semaphore
+            size = taille des images pour l'ia
+            blur = 0 à 10 pour flouter les images pour l'ia
+            imshow = 0 ou 1 pour affichage d'image ou non pendant l'exécution
+        """
+
+        self.root = root
         self.size = int(size)
         self.size = max(20, self.size)
         self.size = min(800, self.size)
-
-        # Flou
         self.blur = blur
+        self.imshow = imshow
+
+        # Compression de training_shot
+        #self.compression(self.root + "training_shot")
 
         # Mes outils personnels
         self.tools = MyTools()
-
-        self.root = root
 
         print("Current directory:", self.root)
 
@@ -128,8 +136,10 @@ class ResizeBlur:
         """Liste des images, lecture, conversion, save"""
 
         i = 0
-        cv2.namedWindow('Image In')
-        cv2.namedWindow('Image Out')
+        if self.imshow:
+            cv2.namedWindow('Image In')
+            cv2.namedWindow('Image Out')
+
         # Pour chaque image
         for shot in self.shot_list:
             # Lecture
@@ -148,12 +158,13 @@ class ResizeBlur:
             #img_out = self.gray_to_BW(img_out)
 
             # ## Affichage
-            if i % 10000 == 0:
-                print(i)
-                imgB = self.change_resolution(img_out, 600, 600)
-                cv2.imshow('Image In', img)
-                cv2.imshow('Image Out', imgB)
-                cv2.waitKey(1)
+            if self.imshow:
+                if i % 10000 == 0:
+                    print(i)
+                    imgB = self.change_resolution(img_out, 600, 600)
+                    cv2.imshow('Image In', img)
+                    cv2.imshow('Image Out', imgB)
+                    cv2.waitKey(1)
             i += 1
 
             # Save
@@ -178,6 +189,12 @@ class ResizeBlur:
         if self.blur:
             img = cv2.blur(img, (k, k))
         return img
+
+    def compression(self, folder):
+        t = datetime.today().strftime("%Y-%m-%d %H:%M")
+        date = t.replace(" ", "_").replace(":", "_").replace("-", "_")
+        name = self.root + "training_shot_" + date
+        shutil.make_archive(name, 'zip', folder)
 
 
 if __name__ == "__main__":

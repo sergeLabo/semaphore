@@ -58,12 +58,20 @@ def get_chars_label(img_file_name):
 
 class ShotsCompression:
 
-    def __init__(self, root, train, test, size, gray=0):
+    def __init__(self, root, train, test, size, gray=0, imshow=1):
+        """ root = dossier semaphore
+            train = nombre d'images d'apprentissage
+            test = nombre d'images de test
+            size = taille des images pour l'ia
+            gray = 0 ou 1 NB ou gray
+            imshow = 0 ou 1 pour affichage d'image ou non pendant l'exécution
+        """
 
         self.train = train
         self.test  = test
         self.size = size
         self.gray = gray
+        self.imshow = imshow
 
         # Mon objet avec mes outils perso
         self.mytools = MyTools()
@@ -116,16 +124,18 @@ class ShotsCompression:
         """
 
         i = 0
-        cv2.namedWindow('Image')
+        if self.imshow:
+            cv2.namedWindow('Image')
         for f in self.images_list:
             # Lecture de l'image f
             img = cv2.imread(f, 0)
 
-            if i % 10000 == 0:
-                print(i)
-                imgB = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
-                cv2.imshow('Image', imgB)
-                cv2.waitKey(1)
+            if self.imshow:
+                if i % 10000 == 0:
+                    print(i)
+                    imgB = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
+                    cv2.imshow('Image', imgB)
+                    cv2.waitKey(1)
 
             # Conversion du gris 0 à 255 en 0 à 1
             # img = np.reshape() / 255.0
@@ -162,7 +172,7 @@ class ShotsCompression:
                              "x_test":  self.images_test,
                              "y_test":  self.labels_test})
 
-        print('Fichier compressé =', outfile, '\n\n\n')
+        print('Fichier compressé =', outfile)
 
 
 if __name__ == "__main__":
