@@ -30,7 +30,7 @@ from semaphore_ia.semaphore_ia import SemaphoreIA
 # 0 ou 1
 GRAY = [0]  # [0, 1]
 # 0 à 10
-BLUR = [4, 5, 6]  # [0, 1, 2, 3, 4, 5, 6]
+BLUR = [3, 4, 5, 6]  # [0, 1, 2, 3, 4, 5, 6]
 # 0.005 à 0.5, paramètre important
 LEARNINGRATE = [0.018,
                 0.020, 0.022, 0.024, 0.026, 0.028,
@@ -93,7 +93,7 @@ def save_test(root, resp, weight_list, gray, blur, learningrate):
     mt = MyTools()
     t = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-    line = str(resp) + "    " + t + str(gray) + str(blur) + str(learningrate) + "\n"
+    line = str(resp) + "    " + t + " " + str(gray) + " " + str(blur) + " " + str(learningrate) + "\n"
     fichier = root + "hyperparameter_tuning.txt"
 
     mt.write_data_in_file(line, fichier, "a")
