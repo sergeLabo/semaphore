@@ -38,11 +38,9 @@ LEARNINGRATE = [0.018,
                 # [0.01, 0.02, 0.03, 0.04]
 NOMBRE_DE_PASSE = 5
 
-def improve_ia():
+def improve_ia(root):
     """Hyperparameter tuning"""
     mt = MyTools()
-    root = mt.get_absolute_path(__file__)[:-21]
-    print("Current directory:", root)
 
     imshow = 0
     mt.create_directory(root + "weights")
@@ -63,6 +61,7 @@ def improve_ia():
             del rb
 
             # compression
+            # TODO de global.ini
             train, test = 60000, 10000
             sc = ShotsCompression(root, train, test, size, gray, imshow)
             sc.create_semaphore_npz()
@@ -93,13 +92,16 @@ def save_test(root, resp, weight_list, gray, blur, learningrate):
     mt = MyTools()
     t = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-    line = str(resp) + "    " + t + " " + str(gray) + " " + str(blur) + " " + str(learningrate) + "\n"
-    fichier = root + "hyperparameter_tuning.txt"
+    a = "{}   Date: {}  Gray: {}  Blur: {}  Learningrate: {}\n"
+    line = a.format(format( round(resp, 2), '.2f'), t, gray, blur,
+                                                    round(learningrate, 3))
+    print(line)
+    fichier = os.path.join(root, "hyperparameter_tuning.txt")
 
     mt.write_data_in_file(line, fichier, "a")
 
     name = str(resp)
-    np.save(root + 'weights/weights_' + name + '.npy', weight_list)
+    #np.save(os.path.join(root, 'weights/weights_', name, '.npy'), weight_list)
 
 def compression(root, folder):
     t = datetime.today().strftime("%Y-%m-%d %H:%M")
@@ -109,10 +111,18 @@ def compression(root, folder):
 
 
 if __name__ == "__main__":
-    # #t = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-    # #line = str(90.3) + t + str(0)
-    # #fichier = "/media/data/3D/projets/semaphore/" + "hyperparameter_tuning.txt"
-    # #mt = MyTools()
-    # #mt.write_data_in_file(line, fichier, "a")
 
-    improve_ia()
+    # Chemin courrant
+    abs_path = MyTools().get_absolute_path(__file__)
+    print("Chemin courrant", abs_path)
+
+    # Nom du script
+    name = os.path.basename(abs_path)
+    print("Nom de ce script:", name)
+
+    # Abs path de semaphore sans / à la fin
+    parts = abs_path.split("semaphore")
+    root = os.path.join(parts[0], "semaphore")
+    print("Path de semaphore:", root)
+
+    improve_ia(root)

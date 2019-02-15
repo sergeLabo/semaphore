@@ -39,22 +39,21 @@ from datetime import datetime
 import numpy as np
 import cv2
 
-# Mes outils personnels
-# à https://ressources.labomedia.org/pymultilame
 from pymultilame import MyTools
 
 TAILLE_MINI_FICHIER_IMAGE = 999
 
+
 class ResizeBlur:
 
-    def __init__(self, root, size, blur, imshow=0):
+    def __init__(self, root, size, blur, imshow=1):
         """ root = dossier semaphore
             size = taille des images pour l'ia
             blur = 0 à 10 pour flouter les images pour l'ia
             imshow = 0 ou 1 pour affichage d'image ou non pendant l'exécution
         """
 
-        self.root = root
+        self.root = root  # soit ..../semaphore
         self.size = int(size)
         self.size = max(20, self.size)
         self.size = min(800, self.size)
@@ -67,8 +66,6 @@ class ResizeBlur:
         # Mes outils personnels
         self.tools = MyTools()
 
-        print("Current directory:", self.root)
-
         # Le terrain de jeu
         self.create_training_shot_resized_dir()
 
@@ -79,18 +76,20 @@ class ResizeBlur:
 
     def create_training_shot_resized_dir(self):
 
-        directory = self.root + "training_shot_resized"
+        directory = os.path.join(self.root, "training_shot_resized")
         print("Dossier training_shot_resized:", directory)
         self.tools.create_directory(directory)
 
     def create_sub_folders(self):
-        """Création de n dossiers shot_000
-        """
+        """Création de n dossiers shot_000"""
+
         # Nombre de dossiers nécessaires
-        n = len(self.tools.get_all_sub_directories(self.root + "training_shot/")) -1
+        d = os.path.join(self.root, "training_shot")
+        n = len(self.tools.get_all_sub_directories(d)) -1
         print("Nombre de sous répertoires", n)
         for i in range(n):
-            directory = self.root + "training_shot_resized" + '/shot_' + str(i).zfill(3)
+            directory = os.path.join(self.root, 'training_shot_resized',
+                                                'shot_' + str(i).zfill(3))
             self.tools.create_directory(directory)
 
     def get_new_name(self, shot):
@@ -105,7 +104,7 @@ class ResizeBlur:
         t = shot.partition("training_shot")
         # t = ('/media/data/3D/projets/semaphore/', 'training_shot',
         #                                       '/shot_000/shot_1054_s.png')
-        name = self.root  + "training_shot_resized" + t[2]
+        name = os.path.join(self.root, "training_shot_resized", t[2][1:])
 
         return name
 
@@ -159,8 +158,8 @@ class ResizeBlur:
 
             # ## Affichage
             if self.imshow:
-                if i % 10000 == 0:
-                    print(i)
+                if i % 500 == 0:
+                    #print(i)
                     imgB = self.change_resolution(img_out, 600, 600)
                     cv2.imshow('Image In', img)
                     cv2.imshow('Image Out', imgB)
@@ -177,7 +176,7 @@ class ResizeBlur:
         """Liste des images"""
 
         # Liste
-        shot = self.root + "training_shot"
+        shot = os.path.join(self.root, "training_shot")
         shot_list = self.tools.get_all_files_list(shot, ".png")
 
         print("Dossier des images NB:", shot)
@@ -193,7 +192,7 @@ class ResizeBlur:
     def compression(self, folder):
         t = datetime.today().strftime("%Y-%m-%d %H:%M")
         date = t.replace(" ", "_").replace(":", "_").replace("-", "_")
-        name = self.root + "training_shot_" + date
+        name = os.path.join(self.root, "training_shot_", date)
         shutil.make_archive(name, 'zip', folder)
 
 
@@ -202,9 +201,21 @@ if __name__ == "__main__":
     SIZE = 40
     BLUR = 6
 
-    print("ResizeBlur de toutes les images dans le dossier training_shot")
-    root = MyTools().get_absolute_path(__file__)[:-26]
-    print("Current directory:", root)
-    rsz = ResizeBlur(root, SIZE, BLUR)
+    # Chemin courrant
+    abs_path = MyTools().get_absolute_path(__file__)
+    print("Chemin courrant", abs_path)
+
+    # Nom du script
+    name = os.path.basename(abs_path)
+    print("Nom de ce script:", name)
+
+    # Abs path de semaphore sans / à la fin
+    parts = abs_path.split("semaphore")
+    root = os.path.join(parts[0], "semaphore")
+    print("Path de semaphore:", root)
+
+    print("\nResizeBlur de toutes les images dans le dossier training_shot")
+
+    rsz = ResizeBlur(root, SIZE, BLUR, 1)
     rsz.batch()
     print("Done")

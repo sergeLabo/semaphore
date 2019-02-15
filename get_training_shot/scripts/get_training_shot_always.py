@@ -21,6 +21,7 @@
 Lancé à chaque frame durant tout le jeu.
 """
 
+import os
 from time import sleep
 import math
 from random import uniform
@@ -160,8 +161,9 @@ def get_name_file_shot():
 
     n = int(gl.numero / gl.nombre_de_fichiers_par_dossier)
 
-    gl.name_file_shot = gl.shot_directory + '/shot_' + str(n).zfill(3) +\
-                        '/shot_' + str(gl.numero) + '_' + gl.chars + '.png'
+    gl.name_file_shot = os.path.join(gl.shot_directory,
+                                     'shot_' + str(n).zfill(3),
+                                     'shot_' + str(gl.numero) + '_' + gl.chars + '.png')
 
     return gl.name_file_shot
 

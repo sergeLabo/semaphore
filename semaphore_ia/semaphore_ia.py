@@ -25,6 +25,7 @@ Le PEP 8 80 colonnes n'est pas respecté pour donner la priorité aux explicatio
 """
 
 
+import os
 import shutil
 import numpy as np
 import cv2
@@ -91,17 +92,17 @@ class SemaphoreIA:
         if self.failed:
             # Suppression du dossier failed et recréation pour le vider
             try:
-                shutil.rmtree(self.root + 'failed')
+                shutil.rmtree(os.path.join(self.root, 'failed'))
             except:
                 print('Pas de dossier failed')
-            self.tools.create_directory(self.root + 'failed')
+            self.tools.create_directory(os.path.join(self.root, 'failed'))
 
         # Réseau de neurones: colonne 1600 en entrée, 2 nodes de 100, sortie de 27 caractères
         self.layers = [1600, 100, 100, 27]
         # Fonction d'activation: imite l'activation d'un neuronne
         self.activations = [relu, relu, sigmoid]
 
-        fichier = np.load(self.root + 'semaphore.npz')
+        fichier = np.load(os.path.join(self.root, 'semaphore.npz'))
         self.x_train, self.y_train = fichier['x_train'], fichier['y_train']
         self.x_train = 1 - self.x_train
         self.x_test, self.y_test = self.x_train[50000:,:], self.y_train[50000:]
@@ -141,8 +142,8 @@ class SemaphoreIA:
             # Affichage pour distraire les mangalore
             # TODO: mettre ça dans un truc à l'ext de cette méthode
             if self.imshow:
-                if i % 10000 == 0:
-                    print(i, nombre_lettre)
+                if i % 400 == 0:
+                    #print(i, nombre_lettre)
                     img = vecteur_ligne.reshape(40,40) * 255
                     img = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
                     cv2.imshow("img", img)
@@ -177,7 +178,7 @@ class SemaphoreIA:
                 weight_list[k] -= self.learningrate * delta_w
 
         # Dans un fichier
-        np.save(self.root + 'weights.npy', weight_list)
+        np.save(os.path.join(self.root, 'weights.npy'), weight_list)
         print('weights.npy enregistré')
         cv2.destroyAllWindows()
         return weight_list
@@ -187,7 +188,7 @@ class SemaphoreIA:
 
         print("Testing...")
 
-        weight_list = np.load(self.root + 'weights.npy')
+        weight_list = np.load(os.path.join(self.root, 'weights.npy'))
 
         # Nombre de bonnes reconnaissance
         success = 0
@@ -214,7 +215,9 @@ class SemaphoreIA:
                     failed_dict[nombre_lettre] += 1
                 else:
                     if self.failed:
-                        self.tools.create_directory(self.root + 'failed' + '/bad_' + str(nombre_lettre))
+                        d = os.path.join(self.root, 'failed', '/bad_',
+                                                        str(nombre_lettre))
+                        self.tools.create_directory(d)
                         failed_dict[nombre_lettre] = 1
 
         if self.failed:
@@ -231,29 +234,32 @@ class SemaphoreIA:
         et le 2ème nombre est la lettre reconnue fausse
         """
         name = str(nombre_lettre) + '_' + str(reconnu) + '_'  + str(S) + '.png'
-        fichier = self.root + 'failed' + '/bad_' + str(nombre_lettre) + '/' + name
+        fichier = os.path.join( self.root,
+                                'failed',
+                                '/bad_',
+                                 str(nombre_lettre) + '/' + name)
         img = img.reshape(40,40) * 255
         cv2.imwrite(fichier, img)
 
 
 if __name__ == "__main__":
 
-    print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-28]
-    print("Current directory:", root)
+    # Chemin courrant
+    abs_path = MyTools().get_absolute_path(__file__)
+    print("Chemin courrant", abs_path)
 
-    # #for i in range(5):
-        # #print("Petit test de l'influence du random dans la liste des poids")
-        # #learningrate = 0.022
-        # #failed = 0
-        # #sia = SemaphoreIA(root, learningrate, failed, imshow=0)
-        # #sia.training()
-        # #resp = sia.testing()
-        # #print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))
+    # Nom du script
+    name = os.path.basename(abs_path)
+    print("Nom de ce script:", name)
+
+    # Abs path de semaphore sans / à la fin
+    parts = abs_path.split("semaphore")
+    root = os.path.join(parts[0], "semaphore")
+    print("Path de semaphore:", root)
 
     learningrate = 0.022
     failed = 0
-    sia = SemaphoreIA(root, learningrate, failed, imshow=0)
+    sia = SemaphoreIA(root, learningrate, failed, imshow=1)
     sia.training()
     resp = sia.testing()
     print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))

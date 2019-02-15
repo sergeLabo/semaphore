@@ -14,7 +14,6 @@ training_shot_resized/
 shots/
 failed/
 *.npz
-*.npy
 training_shot.zip
 weights/
 

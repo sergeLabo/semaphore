@@ -41,15 +41,22 @@ from scripts.angleSemaphore import lettre_table
 def get_conf():
     """Récupère la configuration depuis le fichier *.ini."""
 
-    # Le dossier courrant est le dossier dans lequel est le *.blend
-    current_dir = gl.expandPath('//')
-    # /media/data/3D/projets/semaphore/get_training_shot/
-    print('Dossier courant depuis once.py {}'.format(current_dir))
+    # Chemin courrant
+    abs_path = MyTools().get_absolute_path(__file__)
+    print("Chemin courrant", abs_path)
 
-    gl.current_dir = current_dir[:-18]
+    # Nom du script
+    name = os.path.basename(abs_path)
+    print("Nom de ce script:", name)
 
-    # Configuration dans *.ini
-    gl.ma_conf = MyConfig(current_dir + "scripts/get_training_shot.ini")
+    # Abs path de semaphore sans / à la fin
+    parts = abs_path.split("semaphore")
+    gl.root = os.path.join(parts[0], "semaphore")
+    print("Path de semaphore:", gl.root)
+
+    # Dossier *.ini
+    ini_file = os.path.join(gl.root, "global.ini")
+    gl.ma_conf = MyConfig(ini_file)
     gl.conf = gl.ma_conf.conf
 
     print("\nConfiguration du jeu semaphore:")
@@ -63,20 +70,20 @@ def set_variable():
     gl.cycle = 0
 
     # nombre de shot total
-    gl.nombre_shot_total = gl.conf['modifiable']['nombre_shot_total']
+    gl.nombre_shot_total = gl.conf['ia']['training'] + gl.conf['ia']['testing']
 
     # conversion lettre vers angle
     gl.lettre_table = lettre_table
 
     # Nombre d'images par dossier
-    gl.nombre_de_fichiers_par_dossier = gl.conf['modifiable']['nombre_de_fichiers_par_dossier']
+    gl.nombre_de_fichiers_par_dossier = gl.conf['blend']['nombre_de_fichiers_par_dossier']
 
     # Numéro de frame dans le cycle de chaque lettre
     gl.chars = ""
-    gl.chars_change = gl.conf['modifiable']['chars_change']
+    gl.chars_change = gl.conf['blend']['chars_change']
 
     # Numéro de frame dans le cycle de chaque lettre
-    gl.make_shot = gl.conf['modifiable']['make_shot']
+    gl.make_shot = gl.conf['blend']['make_shot']
 
     # Position de départ du socle
     gl.x = 0
@@ -84,19 +91,18 @@ def set_variable():
     gl.z = 0
 
     # Déplacement du socle
-    gl.static = gl.conf['modifiable']['static']
-    gl.rotation_socle =gl.conf['modifiable']['rotation_socle']
-    gl.glissement_socle = gl.conf['modifiable']['glissement_socle']
+    gl.static = gl.conf['blend']['static']
+    gl.rotation_socle = gl.conf['blend']['rotation_socle']
+    gl.glissement_socle = gl.conf['blend']['glissement_socle']
 
 def create_directories():
     """
     Création de n dossiers
     un fichier = ./semaphore/shot/shot_0/shot_a_0.png
     """
-    mt = MyTools()
 
     # Dossier d'enregistrement des images
-    gl.shot_directory = gl.current_dir + 'training_shot'
+    gl.shot_directory = os.path.join(gl.root, 'training_shot')
     print("Dossier des shots:", gl.shot_directory)
 
     # Si le dossier n'existe pas, je le crée
@@ -104,14 +110,14 @@ def create_directories():
     mt.create_directory(gl.shot_directory)
 
     # Nombre de dossiers nécessaires
-    n = int(gl.nombre_shot_total / gl.nombre_de_fichiers_par_dossier)
+    n = int(gl.nombre_shot_total / gl.nombre_de_fichiers_par_dossier) + 1
 
     for i in range(n):
-        directory = gl.shot_directory + '/shot_' + str(i).zfill(3)
+        directory = os.path.join(gl.shot_directory, 'shot_' + str(i).zfill(3))
         mt.create_directory(directory)
 
 def set_tempo():
-    tempo_liste = [ ("shot", int(gl.conf['modifiable']['shot_every'])),
+    tempo_liste = [ ("shot", int(gl.conf['blend']['shot_every'])),
                     ("frame", 999999999)]
 
     # Comptage des frames par lettre
@@ -119,7 +125,7 @@ def set_tempo():
 
 def get_texte():
     # Récup des textes du dossier texte
-    dossier = gl.current_dir + '/get_training_shot/scripts/texte/'
+    dossier = gl.root + '/get_training_shot/scripts/texte/'
 
     # Le texte à lire
     gl.text_str = get_text_str_from_blender(dossier)

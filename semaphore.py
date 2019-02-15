@@ -18,13 +18,6 @@
 
 """
 Lance en terminal les différentes étapes
-
-menu avec choix
-    1 - Lance blender pour créer les images NB 320x320
-
-Result: 92.94   4 fev 16:19
-
-
 """
 
 
@@ -51,8 +44,11 @@ menu_1 = """\n\n    Menu principal
         """
 
 menu_2 = """\n\nConfiguration
-        Choisir 1 Définir blur
-        Choisir 2 Définir learning rate
+        Choisir 1 pour Définir blur
+        Choisir 2 pour Définir learning rate
+        Choisir 3 pour Définir Gris ou Noir et Blanc
+        Choisir 4 pour Définir le nombre d'images pour l'apprentissage
+        Choisir 5 pour Définir le nombre d'images pour tester
         Choisir 0 pour retour au menu principal
         """
 
@@ -70,15 +66,18 @@ def clear():
 
 
 class SemaphoreConfig(MyConfig):
-    """# self.conf.save_config(section, key, value)"""
 
     def __init__(self):
         """self.conf est le dict de la config définie dans global.ini"""
 
-        self.root = MyTools().get_absolute_path(__file__)[:-12]
-        print('Dossier de ce script:', self.root)
+        path = MyTools().get_absolute_path(__file__)
+        print("Nom de ce script:", os.path.basename(path))  # semaphore.py
 
-        super().__init__(self.root + "global.ini")
+        self.root = os.path.split(path)[0]
+        print("Path du projet:", self.root)  # '/media/data/3D/projets/semaphore'
+
+        ini_file = os.path.join(self.root, "global.ini")
+        super().__init__(ini_file)
 
 
 class Menu(SemaphoreConfig):
@@ -112,7 +111,9 @@ class Menu(SemaphoreConfig):
 
             if choice == "1":  # Blender
                 print("Création des images 320x320 en NB")
-                blend = self.root + 'get_training_shot/get_training_shot.blend'
+                blend = os.path.join(self.root,
+                                    'get_training_shot',
+                                    'get_training_shot.blend')
 
                 # pb fini le script
                 p = subprocess.run(["xterm",
@@ -197,10 +198,48 @@ class Menu(SemaphoreConfig):
                 clear()
                 self.config_menu()
 
+            elif choice == "3":
+                # Gris ou Noir et Blanc
+                print("Apprentissage de l'IA avec des images en gris ou en NB")
+                print('Gray actuel:', self.gray)
+                print('0 = Noir et Blanc')
+                print('1 = Gris')
+                l = input('\n    Saisir la nouvelle valeur 0 ou 1: ')
+                l = int(l)
+                if  l in [0, 1]:
+                    self.gray = l
+                    self.save_config('ia', 'gray', l)
+                    sleep(5)
+                clear()
+                self.config_menu()
+
+            elif choice == "4":
+                # Learning
+                print("Nombre d'images d'apprentissage actuel:", self.train)
+                l = input('\n    Saisir la nouvelle valeur: ')
+                l = int(l)
+                if  l in range(60000):
+                    self.train = l
+                    self.save_config('ia', 'training', l)
+                    sleep(5)
+                clear()
+                self.config_menu()
+
+            elif choice == "5":
+                # Learning
+                print("Nombre d'images de test actuel:", self.test)
+                l = input('\n    Saisir la nouvelle valeur: ')
+                l = int(l)
+                if  l in range(60000):
+                    self.test = l
+                    self.save_config('ia', 'testing', l)
+                    sleep(5)
+                clear()
+                self.config_menu()
+
             elif choice == "0":
                 clear()
                 self.menu()
-
 
 
 if __name__ == "__main__":

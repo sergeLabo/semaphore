@@ -96,10 +96,11 @@ class ShotsCompression:
         self.labels_test = np.zeros((self.test), dtype=np.uint8)
 
     def get_images_list(self):
-        """Liste de toutes les images dans training_shot_resized avec leurs chemin absolu
+        """Liste de toutes les images dans training_shot_resized avec leurs
+        chemin absolu.
         """
 
-        a = self.root + 'training_shot_resized/'
+        a = os.path.join(self.root, 'training_shot_resized')
         print("Dossier des images:", a)
 
         self.images_list = self.mytools.get_all_files_list(a, ".png")
@@ -131,8 +132,8 @@ class ShotsCompression:
             img = cv2.imread(f, 0)
 
             if self.imshow:
-                if i % 10000 == 0:
-                    print(i)
+                if i % 1000 == 0:
+                    #print(i)
                     imgB = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
                     cv2.imshow('Image', imgB)
                     cv2.waitKey(1)
@@ -166,7 +167,7 @@ class ShotsCompression:
         y_train = labels = 60000x1
         """
 
-        outfile = self.root + 'semaphore.npz'
+        outfile = os.path.join(self.root, 'semaphore.npz')
         np.savez_compressed(outfile, **{"x_train": self.images,
                              "y_train": self.labels,
                              "x_test":  self.images_test,
@@ -176,12 +177,23 @@ class ShotsCompression:
 
 
 if __name__ == "__main__":
-    print(MyTools().get_absolute_path(__file__))
-    root = MyTools().get_absolute_path(__file__)[:-32]
-    print("Current directory:", root)
 
+    # Chemin courrant
+    abs_path = MyTools().get_absolute_path(__file__)
+    print("Chemin courrant", abs_path)
+
+    # Nom du script
+    name = os.path.basename(abs_path)
+    print("Nom de ce script:", name)
+
+    # Abs path de semaphore sans / à la fin
+    parts = abs_path.split("semaphore")
+    root = os.path.join(parts[0], "semaphore")
+    print("Path de semaphore:", root)
+
+    # TODO de config global
     train, test, size, gray = 60000, 10000, 40, 0
 
     # Compression des images
-    sc = ShotsCompression(root, train, test, size, gray)
+    sc = ShotsCompression(root, train, test, size, gray, 1)
     sc.create_semaphore_npz()
