@@ -140,15 +140,16 @@ class Menu(SemaphoreConfig):
 
             elif choice == "4":  # IA training
                 print("\nApprentissage de l'IA")
-                sia = SemaphoreIA(self.root, self.learning_rate)
-                self.result = sia.training()
+                sia = SemaphoreIA(self.root, self.train, self.learning_rate)
+                sia.training()
                 clear()
                 self.menu()
 
             elif choice == "5":  # IA testing
                 print("\nTest de l'IA")
-                sia = SemaphoreIA(self.root, self.learning_rate, self.failed)
-                self.result = sia.testing()
+                sia = SemaphoreIA(self.root, self.train, self.learning_rate, self.failed)
+                r = sia.testing()
+                self.result = "{}".format(round(r, 2), '.2f')
                 clear()
                 self.menu()
 

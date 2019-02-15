@@ -75,14 +75,16 @@ def relu_prime(z):
 class SemaphoreIA:
     """Réseau de neuronnes Perceptron multicouches."""
 
-    def __init__(self, root, learningrate, failed=0, imshow=1):
+    def __init__(self, root, train, learningrate, failed=0, imshow=1):
         """ root = dossier semaphore
+            train = Nombre de shot pour l'apprentissage
             learningrate = coeff important
             failed = 0 ou 1, pour analyse des ratés
             imshow = 0 ou 1 pour affichage d'image ou non pendant l'exécution
         """
 
         self.root = root
+        self.train = train
         self.learningrate = learningrate
         self.failed = failed
         self.imshow = imshow
@@ -103,14 +105,22 @@ class SemaphoreIA:
         self.activations = [relu, relu, sigmoid]
 
         fichier = np.load(os.path.join(self.root, 'semaphore.npz'))
-        self.x_train, self.y_train = fichier['x_train'], fichier['y_train']
-        self.x_train = 1 - self.x_train
-        self.x_test, self.y_test = self.x_train[50000:,:], self.y_train[50000:]
-        self.x_train, self.y_train = self.x_train[:50000,:], self.y_train[:50000]
 
-        # Affichage des images pour distraire
-        if self.imshow:
-            cv2.namedWindow('img')
+        self.x_train, self.y_train = fichier['x_train'], fichier['y_train']
+        # Inversion des couleurs, noir devient blanc et lycée de Versailles
+        # Quelle blague Horrible ! train,
+        self.x_train = 1 - self.x_train
+
+        # Coupe en training et testing
+        self.x_train, self.y_train = self.x_train[:self.train,:], self.y_train[:self.train]
+
+        # self.x_train, self.y_train = self.x_train[:50000,:], self.y_train[:50000]
+        self.x_test, self.y_test =   self.x_train[:self.train,:], self.y_train[:self.train]
+
+        print("Nombre de shot trainig:", len(self.x_train))
+        print("Nombre de lettre trainig:", len(self.y_train))
+        print("Nombre de shot testing:", len(self.x_test))
+        print("Nombre de lettre testing:", len(self.y_test))
 
     def training(self):
         """Apprentissage avec 60 000 images
@@ -118,6 +128,10 @@ class SemaphoreIA:
         """
 
         print("Training...")
+
+        # Affichage des images pour distraire
+        if self.imshow:
+            cv2.namedWindow('img')
 
         # Matrice diagonale de 1
         diagonale = np.eye(27, 27)
@@ -184,7 +198,7 @@ class SemaphoreIA:
         return weight_list
 
     def testing(self):
-        """Teste avec 10 000 images, retourne le ratio de bon résultats"""
+        """Teste avec les images de testing, retourne le ratio de bon résultats"""
 
         print("Testing...")
 
@@ -224,7 +238,10 @@ class SemaphoreIA:
             sorted_by_value = sorted(failed_dict.items(), key=lambda kv: kv[1], reverse=True)
             print(sorted_by_value)
 
-        resp = 100.0 * success / len(self.x_test)
+        if len(self.x_test) != 0:
+            resp = 100.0 * success / len(self.x_test)
+        else:
+            resp = 0
         return resp
 
     def write_failed(self, img, nombre_lettre, reconnu, S):
@@ -257,9 +274,10 @@ if __name__ == "__main__":
     root = os.path.join(parts[0], "semaphore")
     print("Path de semaphore:", root)
 
+    train = 35000
     learningrate = 0.022
     failed = 0
-    sia = SemaphoreIA(root, learningrate, failed, imshow=1)
-    sia.training()
+    sia = SemaphoreIA(root, train, learningrate, failed, imshow=1)
+    #sia.training()
     resp = sia.testing()
     print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))
