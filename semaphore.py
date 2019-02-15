@@ -28,7 +28,7 @@ from time import sleep
 # Mon module perso: voir le readme pour install
 from pymultilame import MyTools, MyConfig
 
-from resize_blur.resize_blur import ResizeBlur
+from semaphore_ia.resize_blur import ResizeBlur
 from semaphore_ia.shot_compression import ShotsCompression
 from semaphore_ia.semaphore_ia import SemaphoreIA
 
