@@ -117,10 +117,9 @@ class SemaphoreIA:
         # self.x_train, self.y_train = self.x_train[:50000,:], self.y_train[:50000]
         self.x_test, self.y_test =   self.x_train[:self.train,:], self.y_train[:self.train]
 
-        print("Nombre de shot trainig:", len(self.x_train))
-        print("Nombre de lettre trainig:", len(self.y_train))
-        print("Nombre de shot testing:", len(self.x_test))
-        print("Nombre de lettre testing:", len(self.y_test))
+        a = "Training: Shot {} Lettre {}; Testing: Shot {} Lettre {}"
+        print(a.format( len(self.x_train), len(self.y_train),
+                        len(self.x_test),  len(self.y_test)))
 
     def training(self):
         """Apprentissage avec 60 000 images
