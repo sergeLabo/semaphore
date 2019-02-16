@@ -29,14 +29,19 @@ from semaphore_ia.semaphore_ia import SemaphoreIA
 
 # 0 ou 1
 GRAY = [0]  # [0, 1]
+
 # 0 à 10
-BLUR = [3, 4, 5, 6]  # [0, 1, 2, 3, 4, 5, 6]
+BLUR = [3, 4, 5, 6, 7]
+
 # 0.005 à 0.5, paramètre important
-LEARNINGRATE = [0.018,
-                0.020, 0.022, 0.024, 0.026, 0.028,
-                0.030, 0.032]
-                # [0.01, 0.02, 0.03, 0.04]
+LEARNINGRATE = [0.015, 0.016, 0.017, 0.018, 0.019,
+                0.020, 0.021, 0.022, 0.024, 0.025, 0.026, 0.027, 0.028, 0.029,
+                0.030]
+
 NOMBRE_DE_PASSE = 5
+
+# TODO de global.ini
+TRAIN, TEST = 35000, 35000
 
 def improve_ia(root):
     """Hyperparameter tuning"""
@@ -61,9 +66,7 @@ def improve_ia(root):
             del rb
 
             # compression
-            # TODO de global.ini
-            train, test = 60000, 10000
-            sc = ShotsCompression(root, train, test, size, gray, imshow)
+            sc = ShotsCompression(root, TRAIN, TEST, size, gray, imshow)
             sc.create_semaphore_npz()
             del sc
 
@@ -101,7 +104,7 @@ def save_test(root, resp, weight_list, gray, blur, learningrate):
     mt.write_data_in_file(line, fichier, "a")
 
     name = str(resp)
-    #np.save(os.path.join(root, 'weights/weights_', name, '.npy'), weight_list)
+    np.save(os.path.join(root, 'weights/weights_', name, '.npy'), weight_list)
 
 def compression(root, folder):
     t = datetime.today().strftime("%Y-%m-%d %H:%M")
