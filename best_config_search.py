@@ -47,7 +47,7 @@ def improve_ia(root):
     """Hyperparameter tuning"""
     mt = MyTools()
 
-    imshow = 0
+    imshow = 1
     mt.create_directory(root + "weights")
 
     # liste de [gray, blur, learningrate, res]
@@ -74,7 +74,7 @@ def improve_ia(root):
                 print("learningrate", learningrate)
                 failed = 0
                 for k in range(NOMBRE_DE_PASSE):
-                    sia = SemaphoreIA(root, learningrate, failed, imshow)
+                    sia = SemaphoreIA(root, TRAIN, learningrate, failed, imshow)
                     weight_list = sia.training()
                     resp = sia.testing()
                     all_res[gray][blur].append([learningrate, resp])
