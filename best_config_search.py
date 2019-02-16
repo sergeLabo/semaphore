@@ -23,12 +23,12 @@ from datetime import datetime
 import numpy as np
 
 from pymultilame import MyTools
-from resize_blur.resize_blur import ResizeBlur
+from semaphore_ia.resize_blur import ResizeBlur
 from semaphore_ia.shot_compression import ShotsCompression
 from semaphore_ia.semaphore_ia import SemaphoreIA
 
 # 0 ou 1
-GRAY = [0]  # [0, 1]
+GRAY = [0, 1]
 
 # 0 à 10
 BLUR = [3, 4, 5, 6, 7]
