@@ -104,7 +104,7 @@ def save_test(root, resp, weight_list, gray, blur, learningrate):
     mt.write_data_in_file(line, fichier, "a")
 
     name = str(resp)
-    np.save(os.path.join(root, 'weights/weights_', name, '.npy'), weight_list)
+    np.save(os.path.join(root, 'weights', 'weights_' + name + '.npy'), weight_list)
 
 def compression(root, folder):
     t = datetime.today().strftime("%Y-%m-%d %H:%M")
