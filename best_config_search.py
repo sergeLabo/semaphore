@@ -96,14 +96,16 @@ def save_test(root, resp, weight_list, gray, blur, learningrate):
     t = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
     a = "{}   Date: {}  Gray: {}  Blur: {}  Learningrate: {}\n"
-    line = a.format(format( round(resp, 2), '.2f'), t, gray, blur,
+    line = a.format(format(round(resp, 2), '.2f'), t, gray, blur,
                                                     round(learningrate, 3))
     print(line)
     fichier = os.path.join(root, "hyperparameter_tuning.txt")
 
     mt.write_data_in_file(line, fichier, "a")
 
-    name = str(resp)
+    # Création du dossier weights si besoin
+    mt.create_directory(os.path.join(root, 'weights'))
+    name = str(round(resp, 2))
     np.save(os.path.join(root, 'weights', 'weights_' + name + '.npy'), weight_list)
 
 def compression(root, folder):
