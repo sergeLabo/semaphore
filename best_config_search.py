@@ -28,17 +28,23 @@ from semaphore_ia.shot_compression import ShotsCompression
 from semaphore_ia.semaphore_ia import SemaphoreIA
 
 # 0 ou 1
-GRAY = [0, 1]
+GRAY = [0]  # [0, 1]
 
 # 0 à 10
-BLUR = [3, 4, 5, 6, 7]
+BLUR = [6]  # [4, 5, 6, 7]
 
 # 0.005 à 0.5, paramètre important
-LEARNINGRATE = [0.015, 0.016, 0.017, 0.018, 0.019,
-                0.020, 0.021, 0.022, 0.024, 0.025, 0.026, 0.027, 0.028, 0.029,
-                0.030]
+LEARNINGRATE = [0.0210, 0.0215, 0.0220, 0.0225, 0.0230]
 
-NOMBRE_DE_PASSE = 5
+# #[ 0.0200, 0.0210, 0.0215, 0.0220,
+# #0.0225, 0.023, 0.024, 0.025, 0.026, 0.027]
+
+# #[0.015, 0.016, 0.017, 0.018, 0.019,
+# #0.0200, 0.0210, 0.0215, 0.0220, 0.0225,
+# #0.023, 0.024, 0.025, 0.026, 0.027, 0.028, 0.029,
+# #0.030]
+
+NOMBRE_DE_PASSE = 20
 
 # TODO de global.ini
 TRAIN, TEST = 35000, 35000
@@ -48,7 +54,9 @@ def improve_ia(root):
     mt = MyTools()
 
     imshow = 1
-    mt.create_directory(root + "weights")
+
+    # Création du dossier weights si besoin
+    mt.create_directory(os.path.join(root, 'weights'))
 
     # liste de [gray, blur, learningrate, res]
     all_res = {}
@@ -81,6 +89,7 @@ def improve_ia(root):
                     print("Result:", resp)
                     save_test(root, resp, weight_list, gray, blur, learningrate)
 
+    # Résultat global en terminal
     for key, val in all_res.items():
         print("Gray", key)
         for k, v_l in val.items():
@@ -103,15 +112,17 @@ def save_test(root, resp, weight_list, gray, blur, learningrate):
 
     mt.write_data_in_file(line, fichier, "a")
 
-    # Création du dossier weights si besoin
-    mt.create_directory(os.path.join(root, 'weights'))
     name = str(round(resp, 2))
-    np.save(os.path.join(root, 'weights', 'weights_' + name + '.npy'), weight_list)
+    np.save(os.path.join(   root,
+                            'weights', 'weights_' + name + '.npy'),
+                            weight_list)
 
 def compression(root, folder):
+    """Pas utilisé. Pour idée de compreser tous les dossiers de shot."""
+
     t = datetime.today().strftime("%Y-%m-%d %H:%M")
     date = t.replace(" ", "_").replace(":", "_").replace("-", "_")
-    name = root + "training_shot_" + date
+    name = os.path.join(root, "training_shot_", date
     shutil.make_archive(name, 'zip', folder)
 
 

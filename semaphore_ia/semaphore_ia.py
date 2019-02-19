@@ -277,6 +277,6 @@ if __name__ == "__main__":
     learningrate = 0.022
     failed = 0
     sia = SemaphoreIA(root, train, learningrate, failed, imshow=1)
-    #sia.training()
+    sia.training()
     resp = sia.testing()
     print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))

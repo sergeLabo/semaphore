@@ -125,7 +125,7 @@ def set_tempo():
 
 def get_texte():
     # Récup des textes du dossier texte
-    dossier = gl.root + '/get_training_shot/scripts/texte/'
+    dossier = os.path.join(gl.root, 'get_training_shot', 'scripts', 'texte')
 
     # Le texte à lire
     gl.text_str = get_text_str_from_blender(dossier)

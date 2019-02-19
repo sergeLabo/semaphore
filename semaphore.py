@@ -74,7 +74,7 @@ class SemaphoreConfig(MyConfig):
         print("Nom de ce script:", os.path.basename(path))  # semaphore.py
 
         self.root = os.path.split(path)[0]
-        print("Path du projet:", self.root)  # '/media/data/3D/projets/semaphore'
+        print("Path du projet:", self.root)  #'/media/data/3D/projets/semaphore'
 
         ini_file = os.path.join(self.root, "global.ini")
         super().__init__(ini_file)

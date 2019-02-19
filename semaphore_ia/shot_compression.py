@@ -191,8 +191,7 @@ if __name__ == "__main__":
     root = os.path.join(parts[0], "semaphore")
     print("Path de semaphore:", root)
 
-    # TODO de config global
-    train, test, size, gray = 60000, 10000, 40, 0
+    train, test, size, gray = 35000, 35000, 40, 0
 
     # Compression des images
     sc = ShotsCompression(root, train, test, size, gray, 1)
