@@ -70,22 +70,20 @@ def webcam(c):
         if rep:
             cv2.imshow('Image', frame)
 
-            # hsv
+            # Application d'un seuil
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             lower = np.array([122, 90, 90])  # [125,75, 145]
-
             upper = np.array([255, 255, 255])
             mask = cv2.inRange(hsv, lower, upper)
 
             # Resize
             img = cv2.resize(mask, (40, 40), interpolation=cv2.INTER_AREA)
 
-            # Flou
-            img = cv2.blur(img, (6, 6))
+            # Flou: GaussianBlur semble mieux que Averaging=cv2.blur()
+            img = cv2.GaussianBlur(img, (5, 5), 0)
 
             # Noir et blanc, sans gris
             ret, nb = cv2.threshold(img, 2, 255, cv2.THRESH_BINARY)
-
 
             # Resize pour affichage seul
             big = cv2.resize(nb, (600, 600), interpolation=cv2.INTER_AREA)

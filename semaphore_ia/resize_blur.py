@@ -128,7 +128,7 @@ class ResizeBlur:
     def gray_to_BW(self, shot):
         (threshi, img_bw) = cv2.threshold(shot,
                                           2, 255,
-                                          cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                                          cv2.THRESH_BINARY|cv2.THRESH_OTSU)
         return img_bw
 
     def batch(self):
@@ -185,6 +185,10 @@ class ResizeBlur:
         return shot_list
 
     def apply_blur(self, img, k):
+        """TODO: Utiliser GaussianBlur
+        img = cv2.GaussianBlur(img, (5, 5), 0)
+        """
+
         if self.blur:
             img = cv2.blur(img, (k, k))
         return img
