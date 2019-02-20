@@ -95,6 +95,7 @@ class SemaphoreIA:
             # Suppression du dossier failed et recréation pour le vider
             try:
                 shutil.rmtree(os.path.join(self.root, 'failed'))
+                print("Suppression de failed")
             except:
                 print('Pas de dossier failed')
             self.tools.create_directory(os.path.join(self.root, 'failed'))
@@ -106,16 +107,12 @@ class SemaphoreIA:
 
         fichier = np.load(os.path.join(self.root, 'semaphore.npz'))
 
-        self.x_train, self.y_train = fichier['x_train'], fichier['y_train']
-        # Inversion des couleurs, noir devient blanc et lycée de Versailles
-        # Quelle blague Horrible ! train,
-        self.x_train = 1 - self.x_train
+        self.x_train = fichier['x_train']
+        #self.x_train = 1 - self.x_train   # Inversion des couleurs, N->B, B->N
+        self.y_train = fichier['y_train']
 
-        # Coupe en training et testing
-        self.x_train, self.y_train = self.x_train[:self.train,:], self.y_train[:self.train]
-
-        # self.x_train, self.y_train = self.x_train[:50000,:], self.y_train[:50000]
-        self.x_test, self.y_test =   self.x_train[:self.train,:], self.y_train[:self.train]
+        self.x_test = fichier['x_test']
+        self.y_test = fichier['y_test']
 
         a = "Training: Shot {} Lettre {}; Testing: Shot {} Lettre {}"
         print(a.format( len(self.x_train), len(self.y_train),
@@ -153,7 +150,6 @@ class SemaphoreIA:
         for i, (vecteur_ligne, nombre_lettre) in enumerate(zip(self.x_train, self.y_train)):
 
             # Affichage pour distraire les mangalore
-            # TODO: mettre ça dans un truc à l'ext de cette méthode
             if self.imshow:
                 if i % 400 == 0:
                     #print(i, nombre_lettre)
@@ -206,9 +202,6 @@ class SemaphoreIA:
         # Nombre de bonnes reconnaissance
         success = 0
 
-        # Dict avec le nommbre d'erreurs par lettre
-        failed_dict = {}
-
         for vecteur_ligne, nombre_lettre in zip(self.x_test, self.y_test):
             # image en ligne au 1er passage pour les failed
             img = vecteur_ligne.copy()
@@ -221,21 +214,11 @@ class SemaphoreIA:
             if reconnu == nombre_lettre:
                 success += 1
             else:
-                # TODO: mettre ça dans un truc à l'ext de cette méthode
                 if self.failed:
+                    self.tools.create_directory(os.path.join(self.root,
+                                                             'failed',
+                                                             'bad_' + str(nombre_lettre)))
                     self.write_failed(img, nombre_lettre, reconnu, success)
-                if nombre_lettre in failed_dict:
-                    failed_dict[nombre_lettre] += 1
-                else:
-                    if self.failed:
-                        d = os.path.join(self.root, 'failed', '/bad_',
-                                                        str(nombre_lettre))
-                        self.tools.create_directory(d)
-                        failed_dict[nombre_lettre] = 1
-
-        if self.failed:
-            sorted_by_value = sorted(failed_dict.items(), key=lambda kv: kv[1], reverse=True)
-            print(sorted_by_value)
 
         if len(self.x_test) != 0:
             resp = 100.0 * success / len(self.x_test)
@@ -250,10 +233,10 @@ class SemaphoreIA:
         et le 2ème nombre est la lettre reconnue fausse
         """
         name = str(nombre_lettre) + '_' + str(reconnu) + '_'  + str(S) + '.png'
-        fichier = os.path.join( self.root,
-                                'failed',
-                                '/bad_',
-                                 str(nombre_lettre) + '/' + name)
+
+        fichier = os.path.join( self.root, 'failed', 'bad_' + str(nombre_lettre),
+                                name)
+
         img = img.reshape(40,40) * 255
         cv2.imwrite(fichier, img)
 
@@ -273,10 +256,9 @@ if __name__ == "__main__":
     root = os.path.join(parts[0], "semaphore")
     print("Path de semaphore:", root)
 
-    train = 35000
-    learningrate = 0.022
-    failed = 0
-    sia = SemaphoreIA(root, train, learningrate, failed, imshow=1)
+    train = 60000
+    learningrate = 0.023
+    sia = SemaphoreIA(root, train, learningrate, failed=1, imshow=1)
     sia.training()
     resp = sia.testing()
     print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))

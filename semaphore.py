@@ -219,7 +219,7 @@ class Menu(SemaphoreConfig):
                 print("Nombre d'images d'apprentissage actuel:", self.train)
                 l = input('\n    Saisir la nouvelle valeur: ')
                 l = int(l)
-                if  l in range(60000):
+                if  l in range(60001):
                     self.train = l
                     self.save_config('ia', 'training', l)
                     sleep(5)
@@ -231,7 +231,7 @@ class Menu(SemaphoreConfig):
                 print("Nombre d'images de test actuel:", self.test)
                 l = input('\n    Saisir la nouvelle valeur: ')
                 l = int(l)
-                if  l in range(60000):
+                if  l in range(60001):
                     self.test = l
                     self.save_config('ia', 'testing', l)
                     sleep(5)

@@ -81,6 +81,8 @@ class ShotsCompression:
         print("Dossier semaphore", self.root)
 
         self.get_images_list()
+        a = "Nombre d'images: total = {}, apprentissage = {}, test = {}"
+        print(a.format(len(self.images_list), train, test))
 
         if not self.gray:
             # entier 0 et 1
@@ -191,7 +193,7 @@ if __name__ == "__main__":
     root = os.path.join(parts[0], "semaphore")
     print("Path de semaphore:", root)
 
-    train, test, size, gray = 35000, 35000, 40, 0
+    train, test, size, gray = 60000, 10000, 40, 0
 
     # Compression des images
     sc = ShotsCompression(root, train, test, size, gray, 1)

@@ -127,7 +127,7 @@ class ResizeBlur:
 
     def gray_to_BW(self, shot):
         (threshi, img_bw) = cv2.threshold(shot,
-                                          0, 255,
+                                          2, 255,
                                           cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         return img_bw
 

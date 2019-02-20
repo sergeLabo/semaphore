@@ -77,8 +77,8 @@ class ResizeBlur:
         """Liste des images, lecture, conversion, save"""
 
         i = 0
-        cv2.namedWindow('Image In')
-        cv2.namedWindow('Image Out')
+        # #cv2.namedWindow('Image In')
+        # #cv2.namedWindow('Image Out')
         # Pour chaque image
         for shot in self.shot_list:
             # Lecture
@@ -96,13 +96,12 @@ class ResizeBlur:
 
             # Gris en blanc
             ret, img_out = cv2.threshold(img_out, 2, 255, cv2.THRESH_BINARY)
+            img_out = 255 - img_out
+            # Conversion 0 et 1
+            img_out = img_out / 255
 
-            # Inversion
-            #img_out = 255 - img_out
-
-            # ## Affichage
+            # Affichage
             # #if i % 10 == 0:
-                # #print(i)
                 # #imgB = self.change_resolution(img_out, 600, 600)
                 # #cv2.imshow('Image In', rgb)
                 # #cv2.imshow('Image Out', imgB)

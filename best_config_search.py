@@ -31,23 +31,16 @@ from semaphore_ia.semaphore_ia import SemaphoreIA
 GRAY = [0]  # [0, 1]
 
 # 0 à 10
-BLUR = [6]  # [4, 5, 6, 7]
+BLUR = [4, 5, 6, 7]
 
 # 0.005 à 0.5, paramètre important
-LEARNINGRATE = [0.0210, 0.0215, 0.0220, 0.0225, 0.0230]
+LEARNINGRATE = [0.0200, 0.0210, 0.0215, 0.0220, 0.0225, 0.0230, 0.0240]
 
-# #[ 0.0200, 0.0210, 0.0215, 0.0220,
-# #0.0225, 0.023, 0.024, 0.025, 0.026, 0.027]
+# Test du random: 1 à 20
+NOMBRE_DE_PASSE = 5
 
-# #[0.015, 0.016, 0.017, 0.018, 0.019,
-# #0.0200, 0.0210, 0.0215, 0.0220, 0.0225,
-# #0.023, 0.024, 0.025, 0.026, 0.027, 0.028, 0.029,
-# #0.030]
-
-NOMBRE_DE_PASSE = 20
-
-# TODO de global.ini
-TRAIN, TEST = 35000, 35000
+# Total = 70000
+TRAIN, TEST = 60000, 10000
 
 def improve_ia(root):
     """Hyperparameter tuning"""
@@ -58,16 +51,11 @@ def improve_ia(root):
     # Création du dossier weights si besoin
     mt.create_directory(os.path.join(root, 'weights'))
 
-    # liste de [gray, blur, learningrate, res]
-    all_res = {}
-
     size = 40  # fixe
     for gray in GRAY:
         print("gray", gray)
-        all_res[gray] = {}
         for blur in BLUR:
             print("blur", blur)
-            all_res[gray][blur] = []
             # resize blur
             rb = ResizeBlur(root, size, blur, imshow)
             rb.batch()
@@ -85,45 +73,25 @@ def improve_ia(root):
                     sia = SemaphoreIA(root, TRAIN, learningrate, failed, imshow)
                     weight_list = sia.training()
                     resp = sia.testing()
-                    all_res[gray][blur].append([learningrate, resp])
                     print("Result:", resp)
                     save_test(root, resp, weight_list, gray, blur, learningrate)
-
-    # Résultat global en terminal
-    for key, val in all_res.items():
-        print("Gray", key)
-        for k, v_l in val.items():
-            print("    Blur:", k)
-            for item in v_l:
-                print(  "        Learningrate:",
-                        item[0],
-                        "Résultat:   ",
-                        item[1])
 
 def save_test(root, resp, weight_list, gray, blur, learningrate):
     mt = MyTools()
     t = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-    a = "{}   Date: {}  Gray: {}  Blur: {}  Learningrate: {}\n"
-    line = a.format(format(round(resp, 2), '.2f'), t, gray, blur,
-                                                    round(learningrate, 3))
+    a = "{} Date: {}  TRAIN: {} TEST: {} Gray: {} Blur: {} Learningrate: {}\n"
+    line = a.format(format(round(resp, 2), '.2f'), t, TRAIN, TEST, gray, blur,
+                            round(learningrate, 4))
     print(line)
     fichier = os.path.join(root, "hyperparameter_tuning.txt")
 
     mt.write_data_in_file(line, fichier, "a")
 
     name = str(round(resp, 2))
-    np.save(os.path.join(   root,
-                            'weights', 'weights_' + name + '.npy'),
-                            weight_list)
-
-def compression(root, folder):
-    """Pas utilisé. Pour idée de compreser tous les dossiers de shot."""
-
-    t = datetime.today().strftime("%Y-%m-%d %H:%M")
-    date = t.replace(" ", "_").replace(":", "_").replace("-", "_")
-    name = os.path.join(root, "training_shot_", date
-    shutil.make_archive(name, 'zip', folder)
+    np.save(os.path.join(root,
+                         'weights', 'weights_' + name + '.npy'),
+                          weight_list)
 
 
 if __name__ == "__main__":

@@ -44,13 +44,11 @@ def relu(x):
 
 class Reconnaissance:
 
-    def __init__(self, img):
+    def __init__(self):
         self.weight = np.load('weights.npy')
-        self.img = img
-        self.testing()
 
-    def testing(self):
-        vecteur_ligne = self.img
+    def testing(self, img):
+        vecteur_ligne = img
         layers = [1600, 100, 100, 27]
         activations = [relu, relu, sigmoid]
 
@@ -59,14 +57,13 @@ class Reconnaissance:
                                                        vecteur_ligne))
 
             reconnu = np.argmax(vecteur_ligne)
-
-        print("Caractère reconnu:", reconnu)
         return reconnu
 
 
 def webcam(c):
     cap = cv2.VideoCapture(c)
     loop = 1
+    reco = Reconnaissance()
     while loop:
         rep, frame = cap.read()
 
@@ -75,7 +72,8 @@ def webcam(c):
 
             # hsv
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            lower = np.array([122, 90, 90])
+            lower = np.array([122, 90, 90])  # [125,75, 145]
+
             upper = np.array([255, 255, 255])
             mask = cv2.inRange(hsv, lower, upper)
 
@@ -84,11 +82,17 @@ def webcam(c):
 
             # Flou
             img = cv2.blur(img, (6, 6))
-            big = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
+
+            # Noir et blanc, sans gris
+            ret, nb = cv2.threshold(img, 2, 255, cv2.THRESH_BINARY)
+
+
+            # Resize pour affichage seul
+            big = cv2.resize(nb, (600, 600), interpolation=cv2.INTER_AREA)
             cv2.imshow('Final', big)
 
-            # Reshape
-            res = img.reshape(40*40)
+            # Reshape pour avoir un vecteur ligne
+            vect = nb.reshape(40*40)
 
             k = cv2.waitKey(33)
             # Echap
@@ -96,7 +100,8 @@ def webcam(c):
                 loop = 0
             # Espace
             elif k == 32:
-                reconnu = Reconnaissance(res)
+                reconnu = reco.testing(vect)
+                print("Caractère reconnu:", reconnu)
 
     cv2.destroyAllWindows()
 

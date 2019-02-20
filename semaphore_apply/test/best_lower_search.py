@@ -27,8 +27,9 @@ from resize_blur_test import ResizeBlur
 from compression_test import ShotsCompression
 from semaphore_test import SemaphoreIA
 
-MINI = [118, 78, 78]  #[100, 60, 60]
-DELTA = 2
+MINI = [55, 55, 55]  # [118, 78, 78]
+UPPER = [255, 255, 255]
+DELTA = 10
 NOMBRE = 10
 NOMBRE_DE_PASSE = 1
 GRAY = 0
@@ -52,7 +53,7 @@ def improve_ia(root):
                 lower[2] = MINI[2] + w * DELTA
 
                 # resize BLUR
-                rb = ResizeBlur(root, SIZE, BLUR, lower)
+                rb = ResizeBlur(root, SIZE, BLUR, lower, UPPER)
                 rb.batch()
                 del rb
 
@@ -71,12 +72,13 @@ def save_test(root, resp, GRAY, BLUR, LEARNINGRATE, lower):
     mt = MyTools()
     t = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-    a = "{}   Date: {}  Gray: {}  Blur: {}  Learningrate: {} Lower: {}\n"
+    a = "{}   Date: {}  Gray: {}  Blur: {}  Learningrate: {}  Lower: {}  Upper: {}\n"
     line = a.format(format( round(resp, 2), '.2f'), t,
                             GRAY,
                             BLUR,
                             round(LEARNINGRATE, 3),
-                            lower)
+                            lower,
+                            UPPER)
     print(line)
     fichier = os.path.join(root,  'semaphore_apply', 'test', "best_lower.txt")
 

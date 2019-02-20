@@ -62,16 +62,16 @@ class ShotsCompression:
     def create_semaphore_npz(self):
 
         i = 0
-        cv2.namedWindow('Image')
+        #cv2.namedWindow('Image')
         for f in self.images_list:
             # Lecture de l'image f
             img = cv2.imread(f, 0)
 
             # #if i % 100 == 0:
-                # #print(i)
+                # #img = img * 255
                 # #imgB = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
                 # #cv2.imshow('Image', imgB)
-                # #cv2.waitKey(1)
+                # #cv2.waitKey(300)
 
             # Conversion du gris 0 à 255 en 0 à 1
             #img = np.true_divide(img, 255)
