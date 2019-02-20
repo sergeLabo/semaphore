@@ -59,50 +59,78 @@ class Reconnaissance:
             reconnu = np.argmax(vecteur_ligne)
         return reconnu
 
+class Webcam:
 
-def webcam(c):
-    cap = cv2.VideoCapture(c)
-    loop = 1
-    reco = Reconnaissance()
-    while loop:
-        rep, frame = cap.read()
+    def __init__(self, c):
+        self.cap = cv2.VideoCapture(c)
+        self.loop = 1
+        self.reco = Reconnaissance()
 
-        if rep:
-            cv2.imshow('Image', frame)
+        cv2.namedWindow('RGB Input')
+        cv2.namedWindow('Final')
+        cv2.createTrackbar('h_min', 'Final', 0, 255, self.onChange_h_min)
+        cv2.createTrackbar('s_min', 'Final', 0, 255, self.onChange_s_min)
+        cv2.createTrackbar('v_min', 'Final', 0, 255, self.onChange_v_min)
+        cv2.setTrackbarPos('h_min', 'Final', 120)
+        cv2.setTrackbarPos('s_min', 'Final', 80)
+        cv2.setTrackbarPos('v_min', 'Final', 80)
+        self.h_min = 120
+        self.s_min = 80
+        self.v_min = 80
 
-            # Application d'un seuil
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            lower = np.array([122, 90, 90])  # [125,75, 145]
-            upper = np.array([255, 255, 255])
-            mask = cv2.inRange(hsv, lower, upper)
+    def webcam(self):
+        while self.loop:
+            rep, frame = self.cap.read()
 
-            # Resize
-            img = cv2.resize(mask, (40, 40), interpolation=cv2.INTER_AREA)
+            if rep:
+                cv2.imshow('RGB Input', frame)
 
-            # Flou: GaussianBlur semble mieux que Averaging=cv2.blur()
-            img = cv2.GaussianBlur(img, (5, 5), 0)
+                # Application d'un seuil
+                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-            # Noir et blanc, sans gris
-            ret, nb = cv2.threshold(img, 2, 255, cv2.THRESH_BINARY)
+                #lower = np.array([122, 90, 90])  # [125,75, 145]
+                lower = np.array([self.h_min, self.s_min, self.v_min])
+                upper = np.array([255, 255, 255])
+                mask = cv2.inRange(hsv, lower, upper)
 
-            # Resize pour affichage seul
-            big = cv2.resize(nb, (600, 600), interpolation=cv2.INTER_AREA)
-            cv2.imshow('Final', big)
+                # Resize
+                img = cv2.resize(mask, (40, 40), interpolation=cv2.INTER_AREA)
 
-            # Reshape pour avoir un vecteur ligne
-            vect = nb.reshape(40*40)
+                # Flou: GaussianBlur semble mieux que Averaging=cv2.blur()
+                img = cv2.GaussianBlur(img, (5, 5), 0)
 
-            k = cv2.waitKey(33)
-            # Echap
-            if k == 27:
-                loop = 0
-            # Espace
-            elif k == 32:
-                reconnu = reco.testing(vect)
-                print("Caractère reconnu:", reconnu)
+                # Noir et blanc, sans gris
+                ret, nb = cv2.threshold(img, 2, 255, cv2.THRESH_BINARY)
 
-    cv2.destroyAllWindows()
+                # Resize pour affichage seul
+                big = cv2.resize(nb, (600, 600), interpolation=cv2.INTER_AREA)
+                cv2.imshow('Final', big)
+
+                # Reshape pour avoir un vecteur ligne
+                vect = nb.reshape(40*40)
+
+                k = cv2.waitKey(33)
+                # Echap
+                if k == 27:
+                    loop = 0
+                # Espace
+                elif k == 32:
+                    reconnu = self.reco.testing(vect)
+                    print("Caractère reconnu:", reconnu)
+
+        cv2.destroyAllWindows()
+
+    def onChange_h_min(self, a):
+        self.h_min = a
+
+    def onChange_s_min(self, a):
+        self.s_min = a
+
+    def onChange_v_min(self, a):
+        self.v_min = a
+
 
 if __name__ == "__main__":
     # 0 = numéro de cam
-    webcam(0)
+    w = Webcam(0)
+    w.webcam()
