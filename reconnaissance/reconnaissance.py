@@ -59,6 +59,7 @@ class Reconnaissance:
             reconnu = np.argmax(vecteur_ligne)
         return reconnu
 
+
 class Webcam:
 
     def __init__(self, c):
@@ -112,7 +113,7 @@ class Webcam:
                 k = cv2.waitKey(33)
                 # Echap
                 if k == 27:
-                    loop = 0
+                    self.loop = 0
                 # Espace
                 elif k == 32:
                     reconnu = self.reco.testing(vect)
