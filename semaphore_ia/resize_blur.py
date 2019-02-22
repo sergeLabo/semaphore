@@ -25,8 +25,7 @@ Je lis le dossier /media/data/3D/projets/semaphore/training_shot,
         ex /media/data/3D/projets/semaphore/training_shot/shot_000/shot_0_a.png
 
 Pour chaque image *.png,
-    je lis
-    verif_shot_integrity avec TAILLE_MINI_FICHIER_IMAGE
+
     convertit en 40x40
     enregistre dans /training_shot_resized/shot_0xx/
         avec le même nom soit /training_shot_resized/shot_0xx/shot_0_a.png
@@ -59,9 +58,6 @@ class ResizeBlur:
         self.size = min(800, self.size)
         self.blur = blur
         self.imshow = imshow
-
-        # Compression de training_shot
-        #self.compression(self.root + "training_shot")
 
         # Mes outils personnels
         self.tools = MyTools()
@@ -117,60 +113,40 @@ class ResizeBlur:
             res = np.zeros([self.size, self.size, 1], dtype=np.uint8)
         return res
 
-    def verif_shot_integrity(self, shot):
-        """Vérifie si la taille de l'image est cohérente"""
-
-        info = os.path.getsize(shot)
-        if info < TAILLE_MINI_FICHIER_IMAGE:
-            print("Intégrité - image à vérifier:", shot)
-            os._exit(0)
-
-    def gray_to_BW(self, shot):
-        (threshi, img_bw) = cv2.threshold(shot,
-                                          2, 255,
-                                          cv2.THRESH_BINARY|cv2.THRESH_OTSU)
-        return img_bw
-
     def batch(self):
-        """Liste des images, lecture, conversion, save"""
+            """Liste des images, lecture, conversion, save"""
 
-        i = 0
-        if self.imshow:
-            cv2.namedWindow('Image In')
-            cv2.namedWindow('Image Out')
-
-        # Pour chaque image
-        for shot in self.shot_list:
-            # Lecture
-            img = cv2.imread(shot, 0)
-
-            # Vérification
-            self.verif_shot_integrity(shot)
-
-            # ResizeBlur
-            img_out = self.change_resolution(img, self.size, self.size)
-
-            # Flou
-            img_out = self.apply_blur(img_out, self.blur)
-
-            # conversion en BW
-            #img_out = self.gray_to_BW(img_out)
-
-            # ## Affichage
+            i = 0
             if self.imshow:
-                if i % 500 == 0:
-                    #print(i)
-                    imgB = self.change_resolution(img_out, 600, 600)
-                    cv2.imshow('Image In', img)
-                    cv2.imshow('Image Out', imgB)
-                    cv2.waitKey(1)
-            i += 1
+                cv2.namedWindow('Image In')
+                cv2.namedWindow('Image Out')
 
-            # Save
-            new_shot = self.get_new_name(shot)
-            cv2.imwrite(new_shot, img_out)
+            # Pour chaque image
+            for shot in self.shot_list:
+                # Lecture
+                img = cv2.imread(shot, 0)
 
-        cv2.destroyAllWindows()
+                # ResizeBlur
+                img_out = self.change_resolution(img, self.size, self.size)
+
+                # Flou
+                img_out = self.apply_blur(img_out, self.blur)
+
+                # ## Affichage
+                if self.imshow:
+                    if i % 500 == 0:
+                        #print(i)
+                        imgB = self.change_resolution(img_out, 600, 600)
+                        cv2.imshow('Image In', img)
+                        cv2.imshow('Image Out', imgB)
+                        cv2.waitKey(1)
+                i += 1
+
+                # Save
+                new_shot = self.get_new_name(shot)
+                cv2.imwrite(new_shot, img_out)
+
+    cv2.destroyAllWindows()
 
     def get_shot_list(self):
         """Liste des images"""
@@ -193,12 +169,6 @@ class ResizeBlur:
             img = cv2.blur(img, (k, k))
         return img
 
-    def compression(self, folder):
-        t = datetime.today().strftime("%Y-%m-%d %H:%M")
-        date = t.replace(" ", "_").replace(":", "_").replace("-", "_")
-        name = os.path.join(self.root, "training_shot_", date)
-        shutil.make_archive(name, 'zip', folder)
-
 
 if __name__ == "__main__":
 
@@ -220,6 +190,6 @@ if __name__ == "__main__":
 
     print("\nResizeBlur de toutes les images dans le dossier training_shot")
 
-    rsz = ResizeBlur(root, SIZE, BLUR, 1)
+    rsz = ResizeBlur(root, SIZE, BLUR, imshow=1)
     rsz.batch()
     print("Done")

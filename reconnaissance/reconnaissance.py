@@ -16,7 +16,7 @@
 #
 ########################################################################
 
-import os
+
 import numpy as np
 import cv2
 
@@ -67,17 +67,18 @@ class Webcam:
         self.loop = 1
         self.reco = Reconnaissance()
 
+        self.h_min = 85
+        self.s_min = 156
+        self.v_min = 137
+
         cv2.namedWindow('RGB Input')
         cv2.namedWindow('Final')
         cv2.createTrackbar('h_min', 'Final', 0, 255, self.onChange_h_min)
         cv2.createTrackbar('s_min', 'Final', 0, 255, self.onChange_s_min)
         cv2.createTrackbar('v_min', 'Final', 0, 255, self.onChange_v_min)
-        cv2.setTrackbarPos('h_min', 'Final', 120)
-        cv2.setTrackbarPos('s_min', 'Final', 80)
-        cv2.setTrackbarPos('v_min', 'Final', 80)
-        self.h_min = 120
-        self.s_min = 80
-        self.v_min = 80
+        cv2.setTrackbarPos('h_min', 'Final', self.h_min)
+        cv2.setTrackbarPos('s_min', 'Final', self.s_min)
+        cv2.setTrackbarPos('v_min', 'Final', self.v_min)
 
     def webcam(self):
         while self.loop:
@@ -89,16 +90,15 @@ class Webcam:
                 # Application d'un seuil
                 hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-                #lower = np.array([122, 90, 90])  # [125,75, 145]
                 lower = np.array([self.h_min, self.s_min, self.v_min])
                 upper = np.array([255, 255, 255])
-                mask = cv2.inRange(hsv, lower, upper)
-
-                # Resize
-                img = cv2.resize(mask, (40, 40), interpolation=cv2.INTER_AREA)
+                img = cv2.inRange(hsv, lower, upper)
 
                 # Flou: GaussianBlur semble mieux que Averaging=cv2.blur()
                 img = cv2.GaussianBlur(img, (5, 5), 0)
+
+                # Resize
+                img = cv2.resize(img, (40, 40), interpolation=cv2.INTER_AREA)
 
                 # Noir et blanc, sans gris
                 ret, nb = cv2.threshold(img, 2, 255, cv2.THRESH_BINARY)
@@ -106,6 +106,9 @@ class Webcam:
                 # Resize pour affichage seul
                 big = cv2.resize(nb, (600, 600), interpolation=cv2.INTER_AREA)
                 cv2.imshow('Final', big)
+
+                # Valeur 0 ou 1
+                nb = nb / 255
 
                 # Reshape pour avoir un vecteur ligne
                 vect = nb.reshape(40*40)

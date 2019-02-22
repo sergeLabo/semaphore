@@ -152,8 +152,11 @@ class SemaphoreIA:
             # Affichage pour distraire les mangalore
             if self.imshow:
                 if i % 400 == 0:
+                    img = vecteur_ligne * 255
                     #print(i, nombre_lettre)
-                    img = vecteur_ligne.reshape(40,40) * 255
+                    # #for m in range(200):
+                        # #print(vecteur_ligne[m+500])
+                    img = img.reshape(40,40)
                     img = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
                     cv2.imshow("img", img)
                     cv2.waitKey(1)
@@ -257,8 +260,8 @@ if __name__ == "__main__":
     print("Path de semaphore:", root)
 
     train = 60000
-    learningrate = 0.023
-    sia = SemaphoreIA(root, train, learningrate, failed=1, imshow=1)
+    learningrate = 0.022
+    sia = SemaphoreIA(root, train, learningrate, failed=0, imshow=1)
     sia.training()
     resp = sia.testing()
     print("Learningrate: {} Résultat {}".format(learningrate, round(resp, 1)))

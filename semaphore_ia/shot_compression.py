@@ -111,17 +111,13 @@ class ShotsCompression:
     def create_semaphore_npz(self):
         """Lit toutes les images de
         /media/data/3D/projets/semaphore/semaphore_ia/shots
-
         60 000 images 40x40
         transformation du array 40,40 en array 1, 2500
         conversion 0:255 en 0:1
-
         x_train = images = 60000x2500
         y_train = labels = 60000x1
-
         x_test = images = 10000x2500
         y_test = labels = 10000x1
-
         concatenate dans un gros array
         enregistrement
         """
@@ -160,9 +156,9 @@ class ShotsCompression:
             i += 1
 
         cv2.destroyAllWindows()
-        self.save_train()
+        self.save_npz()
 
-    def save_train(self):
+    def save_npz(self):
         """Enregistre les arrays images et labels dans un fichier compressé
         ./semaphore.npz
         x_train = images = 60000x2500
@@ -193,8 +189,8 @@ if __name__ == "__main__":
     root = os.path.join(parts[0], "semaphore")
     print("Path de semaphore:", root)
 
-    train, test, size, gray = 60000, 10000, 40, 0
+    train, test, size, gray, imshow = 60000, 10000, 40, 0, 1
 
     # Compression des images
-    sc = ShotsCompression(root, train, test, size, gray, 1)
+    sc = ShotsCompression(root, train, test, size, gray, imshow)
     sc.create_semaphore_npz()

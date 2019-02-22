@@ -76,7 +76,7 @@ class SemaphoreIA:
         self.x_test, self.y_test = fichier['x_test'], fichier['y_test']
 
         # Affichage des images pour distraire
-        #cv2.namedWindow('image')
+        cv2.namedWindow('image')
 
     def testing(self):
         """Teste avec 1 000 images, retourne le ratio de bon résultats"""
@@ -91,12 +91,12 @@ class SemaphoreIA:
         i = 0
         for vecteur_ligne, nombre_lettre in zip(self.x_test, self.y_test):
             # Affichage pour distraire les mangalores
-            # #if i % 1 == 0:
-                # #image = vecteur_ligne.reshape(40,40)
-                # #image = cv2.resize(image, (600, 600), interpolation=cv2.INTER_AREA)
-                # #image = image * 255
-                # #cv2.imshow("image", image)
-                # #cv2.waitKey(30)
+            if i % 1 == 1000:
+                image = vecteur_ligne.reshape(40,40)
+                image = cv2.resize(image, (600, 600), interpolation=cv2.INTER_AREA)
+                image = image * 255
+                cv2.imshow("image", image)
+                cv2.waitKey(30)
 
             # image en ligne au 1er passage pour les failed
             img = vecteur_ligne.copy()
