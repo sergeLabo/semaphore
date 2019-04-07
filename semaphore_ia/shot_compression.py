@@ -140,6 +140,10 @@ class ShotsCompression:
             # img = np.reshape() / 255.0
             img = np.true_divide(img, 255)
 
+            # Conversion en 0 et 1, soit noir et blanc, pas de gris
+            # Sert à rien, c'est enregistré en int !!
+            img = img.astype(int)
+
             # Retaillage sur une ligne
             img = np.resize(img, (self.size * self.size))
 

@@ -260,7 +260,7 @@ if __name__ == "__main__":
     print("Path de semaphore:", root)
 
     train = 60000
-    learningrate = 0.022
+    learningrate = 0.023
     sia = SemaphoreIA(root, train, learningrate, failed=0, imshow=1)
     sia.training()
     resp = sia.testing()

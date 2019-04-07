@@ -35,6 +35,7 @@ Pour chaque image *.png,
 import os
 import shutil
 from datetime import datetime
+import random
 import numpy as np
 import cv2
 
@@ -113,40 +114,97 @@ class ResizeBlur:
             res = np.zeros([self.size, self.size, 1], dtype=np.uint8)
         return res
 
+    def apply_blur(self, img, k):
+        """TODO: Utiliser GaussianBlur
+        img = cv2.GaussianBlur(img, (5, 5), 0)
+        """
+
+        if self.blur:
+            img = cv2.blur(img, (k, k))
+        return img
+
+    def random_noise(self, img):
+        """Entre 0 et 20 pixels au hasard"""
+
+        nb = random.randint(0, 10)
+
+        for i in range(nb):
+            x = random.randint(0, 39)
+            y = random.randint(0, 39)
+            img[x][y] = 1
+
+        return img
+
+    def some_dirty(self, img):
+        """0 à 3 paquets de 4 pixels
+        0 1 0
+        1 1 1
+        0 1 0
+        """
+
+        nb = random.randint(0, 2)
+        for i in range(nb):
+            x = random.randint(0, 34)
+            y = random.randint(0, 34)
+
+            # 1ère ligne
+            a = x + 1
+            b = y + 0
+            img[a][b] = 1
+
+            # 2ème ligne
+            for u in range(3):
+                a = x + u
+                b = y + 1
+                img[a][b] = 1
+
+            # 3ème ligne
+            a = x + 1
+            b = y + 2
+            img[a][b] = 1
+
+        return img
+
     def batch(self):
-            """Liste des images, lecture, conversion, save"""
+        """Liste des images, lecture, conversion, save"""
 
-            i = 0
+        i = 0
+        if self.imshow:
+            cv2.namedWindow('Image In')
+            cv2.namedWindow('Image Out')
+
+        # Pour chaque image
+        for shot in self.shot_list:
+            # Lecture
+            img = cv2.imread(shot, 0)
+
+            # ResizeBlur
+            img_out = self.change_resolution(img, self.size, self.size)
+
+            # Flou
+            img_out = self.apply_blur(img_out, self.blur)
+
+            # Noise
+            # L'ajout de bruit est appris par le réseau et va dégrader la
+            # reconnaissance, mais Jo dit que non, ça dépend de ???
+            # #img_out = self.random_noise(img_out)
+            # #img_out = self.some_dirty(img_out)
+
+            # ## Affichage
             if self.imshow:
-                cv2.namedWindow('Image In')
-                cv2.namedWindow('Image Out')
+                if i % 500 == 0:
+                    #print(i)
+                    imgB = self.change_resolution(img_out, 600, 600)
+                    cv2.imshow('Image In', img)
+                    cv2.imshow('Image Out', imgB)
+                    cv2.waitKey(1)
+            i += 1
 
-            # Pour chaque image
-            for shot in self.shot_list:
-                # Lecture
-                img = cv2.imread(shot, 0)
+            # Save
+            new_shot = self.get_new_name(shot)
+            cv2.imwrite(new_shot, img_out)
 
-                # ResizeBlur
-                img_out = self.change_resolution(img, self.size, self.size)
-
-                # Flou
-                img_out = self.apply_blur(img_out, self.blur)
-
-                # ## Affichage
-                if self.imshow:
-                    if i % 500 == 0:
-                        #print(i)
-                        imgB = self.change_resolution(img_out, 600, 600)
-                        cv2.imshow('Image In', img)
-                        cv2.imshow('Image Out', imgB)
-                        cv2.waitKey(1)
-                i += 1
-
-                # Save
-                new_shot = self.get_new_name(shot)
-                cv2.imwrite(new_shot, img_out)
-
-    cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
 
     def get_shot_list(self):
         """Liste des images"""
@@ -159,15 +217,6 @@ class ResizeBlur:
         print("Nombre d'images:", len(shot_list))
 
         return shot_list
-
-    def apply_blur(self, img, k):
-        """TODO: Utiliser GaussianBlur
-        img = cv2.GaussianBlur(img, (5, 5), 0)
-        """
-
-        if self.blur:
-            img = cv2.blur(img, (k, k))
-        return img
 
 
 if __name__ == "__main__":

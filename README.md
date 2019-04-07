@@ -20,22 +20,21 @@ Quelques images pour apprendre, en gris 40x40 floues, différentes tailles et ro
 
 ### La documentation sur ressources.labomedia.org
 
-[Sémaphore](https://ressources.labomedia.org/jeu_du_semaphore_dans_le_blender_game_engine)
+* [Jeu du sémaphore dans le Blender Game Engine](https://ressources.labomedia.org/jeu_du_semaphore_dans_le_blender_game_engine)
+* [L'intelligence du sémaphore](https://ressources.labomedia.org/l_intelligence_du_semaphore)
+
 
 ### Dossiers images
 
-Les images ne sont pas dans ce dépot
+Les images ne sont pas dans ce dépôt
 
 ### Installation
-
 ### pip3
-
 ~~~text
 sudo apt install python3-pip
 ~~~
 
 #### pymultilame
-
 ~~~text
 sudo pip3 install -e git+https://github.com/sergeLabo/pymultilame.git#egg=pymultilame
 ~~~
@@ -46,20 +45,17 @@ sudo pip3 install --upgrade git+https://github.com/sergeLabo/pymultilame.git#egg
 ~~~
 
 #### Opencv et numpy
-
 ~~~text
 sudo pip3 install numpy
 sudo pip3 install opencv-python
 ~~~
 
 #### Blender 2.79b mais pas 2.80 qui n'a plus de BGE
-
 ~~~text
 sudo apt install blender
 ~~~
 
 ### Utilisation
-
 Ouvrir un teminal dans le dossier semaphore
 ~~~text
 ./semaphore.sh

@@ -94,14 +94,20 @@ class Webcam:
                 upper = np.array([255, 255, 255])
                 img = cv2.inRange(hsv, lower, upper)
 
-                # Flou: GaussianBlur semble mieux que Averaging=cv2.blur()
-                img = cv2.GaussianBlur(img, (5, 5), 0)
+                # Flou
+                img = cv2.blur(img, (6, 6))
 
                 # Resize
                 img = cv2.resize(img, (40, 40), interpolation=cv2.INTER_AREA)
 
                 # Noir et blanc, sans gris
                 ret, nb = cv2.threshold(img, 2, 255, cv2.THRESH_BINARY)
+
+                # Nettoyage
+                nb = self.erode(nb)
+                nb = self.dilatation(nb)
+                nb = self.opening(nb)
+                nb = self.closing(nb)
 
                 # Resize pour affichage seul
                 big = cv2.resize(nb, (600, 600), interpolation=cv2.INTER_AREA)
@@ -124,6 +130,30 @@ class Webcam:
 
         cv2.destroyAllWindows()
 
+    def opening(self, img):
+        """removing noise"""
+
+        kernel = np.ones((3,3), np.uint8)
+        opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+        return opening
+
+    def closing(self, img):
+        """Suppression du bruit à l'intérieur"""
+
+        kernel = np.ones((3,3), np.uint8)
+        closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+        return closing
+
+    def erode(self, img):
+        kernel = np.ones((3,3), np.uint8)
+        img = cv2.erode(img, kernel, iterations = 1)
+        return img
+
+    def dilatation(self, img):
+        kernel = np.ones((3,3), np.uint8)
+        img = cv2.dilate(img, kernel, iterations = 1)
+        return img
+
     def onChange_h_min(self, a):
         self.h_min = a
 
@@ -136,5 +166,5 @@ class Webcam:
 
 if __name__ == "__main__":
     # 0 = numéro de cam
-    w = Webcam(0)
+    w = Webcam(1)
     w.webcam()
