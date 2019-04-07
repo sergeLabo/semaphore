@@ -15,7 +15,7 @@ Réalisé avec:
 
 Les images sorties de Blender 320x320:
 
-<img src="/doc/some_shot_320/shot_0_a.png" width="100" height="100"/><img src="/doc/some_shot_320/shot_1_.png" width="100" height="100"/><img src="/doc/some_shot_320/shot_2_b.png" width="100" height="100"/>
+<img src="/doc/some_shot_320/shot_0_a.png" width="100" height="100"/><img src="/doc/some_shot_320/shot_1_space.png" width="100" height="100"/><img src="/doc/some_shot_320/shot_2_b.png" width="100" height="100"/>
 
 Les images retaillées à 40x40, floutées:
 
