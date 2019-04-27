@@ -18,9 +18,7 @@
 
 """
 Training: Calcule le fichier 'd'intelligence' weight.npy avec 60 000 images
-
 Testing: Teste avec 10 000 images
-
 Le PEP 8 80 colonnes n'est pas respecté pour donner la priorité aux explications
 """
 
@@ -108,7 +106,6 @@ class SemaphoreIA:
         fichier = np.load(os.path.join(self.root, 'semaphore.npz'))
 
         self.x_train = fichier['x_train']
-        #self.x_train = 1 - self.x_train   # Inversion des couleurs, N->B, B->N
         self.y_train = fichier['y_train']
 
         self.x_test = fichier['x_test']
@@ -125,7 +122,7 @@ class SemaphoreIA:
 
         print("Training...")
 
-        # Affichage des images pour distraire
+        # Affichage des images pour distraire les mangalore
         if self.imshow:
             cv2.namedWindow('img')
 
@@ -140,7 +137,7 @@ class SemaphoreIA:
         # Liste des poids
         # Initialisation des poids des nodes, pour ne pas à être à 0
         # Construit 3 matrices (100x1600, 100x100, 27x100)
-        # /np.sqrt() résultat expérimental de l'initialisation de Glorot He Xavier
+        # /np.sqrt() résultat expérimental de l'initialisation de Xavier Glorot et He
         weight_list = [np.random.randn(self.layers[k+1], self.layers[k]) / \
                        np.sqrt(self.layers[k]) for k in range(len(self.layers)-1)]
 
@@ -153,9 +150,6 @@ class SemaphoreIA:
             if self.imshow:
                 if i % 400 == 0:
                     img = vecteur_ligne * 255
-                    #print(i, nombre_lettre)
-                    # #for m in range(200):
-                        # #print(vecteur_ligne[m+500])
                     img = img.reshape(40,40)
                     img = cv2.resize(img, (600, 600), interpolation=cv2.INTER_AREA)
                     cv2.imshow("img", img)
@@ -237,7 +231,9 @@ class SemaphoreIA:
         """
         name = str(nombre_lettre) + '_' + str(reconnu) + '_'  + str(S) + '.png'
 
-        fichier = os.path.join( self.root, 'failed', 'bad_' + str(nombre_lettre),
+        fichier = os.path.join( self.root,
+                                'failed',
+                                'bad_' + str(nombre_lettre),
                                 name)
 
         img = img.reshape(40,40) * 255
