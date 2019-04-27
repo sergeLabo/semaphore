@@ -16,6 +16,7 @@ shot_resized/
 failed/
 training_shot.zip
 weights/
+semaphore_apply/
 
 # Python test
 *_old.py
