@@ -8,6 +8,7 @@ old/
 alphabet_old/
 shot/
 training_shot/
+training_shot_copy/
 video/
 langage_semaphore/
 training_shot_resized/
@@ -17,6 +18,8 @@ failed/
 training_shot.zip
 weights/
 semaphore_apply/
+doc_perceptron/
+reconnaissance/
 
 # Python test
 *_old.py
