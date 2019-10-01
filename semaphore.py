@@ -149,7 +149,7 @@ class Menu(SemaphoreConfig):
                 print("\nTest de l'IA")
                 sia = SemaphoreIA(self.root, self.train, self.learning_rate, self.failed)
                 r = sia.testing()
-                self.result = "{}".format(round(r, 2), '.2f')
+                self.result = "\nEfficacité: {}".format(round(r, 2), '.2f')
                 clear()
                 self.menu()
 
