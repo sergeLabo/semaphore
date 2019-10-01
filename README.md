@@ -8,7 +8,7 @@ Réalisé avec:
 
 * Debian 10 Buster
 
-### 60 000 images pour créer le réseau de neuronnes
+### 70 000 images pour créer le réseau de neuronnes
 
 Les images sorties de Blender 320x320:
 
@@ -21,6 +21,21 @@ Les images retaillées à 40x40, floutées:
 Les images en noir et blanc, utilisées pour l'apprentissage:
 
 <img src="/doc/some_shot_nb/shot_0_a.png" width="100" height="100"/><img src="/doc/some_shot_nb//shot_1_space.png" width="100" height="100"/><img src="/doc/some_shot_nb//shot_2_b.png" width="100" height="100"/>
+
+### Utilisation
+
+Ouvrir un teminal dans le dossier semaphore
+~~~text
+./semaphore.sh
+~~~
+
+Il n'est pas necessaire de créer les images avec Blender:
+
+Les images au format 40x40 en gris sont dans le fichier training_shot.tar.gz
+
+Le décompresser. Vous obtenez un dossier training_shot dans le dossier semaphore.
+
+Et passer directement à l'étape 2.
 
 ### La documentation sur ressources.labomedia.org
 
@@ -57,12 +72,6 @@ sudo pip3 install opencv-python
 #### Blender 2.79b mais pas 2.80 qui n'a plus de BGE
 ~~~text
 sudo apt install blender
-~~~
-
-### Utilisation
-Ouvrir un teminal dans le dossier semaphore
-~~~text
-./semaphore.sh
 ~~~
 
 Important: Ne pas déplacer ou aggrandir la fenêtre de Blender pendant que les
