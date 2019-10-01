@@ -29,7 +29,7 @@ Ouvrir un teminal dans le dossier semaphore
 ./semaphore.sh
 ~~~
 
-Il n'est pas necessaire de créer les images avec Blender:
+Il n'est pas necessaire de créer les images avec Blender: cetteétape dure 3 heures !
 
 Les images au format 40x40 en gris sont dans le fichier training_shot.tar.gz
 
