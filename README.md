@@ -1,6 +1,8 @@
 # semaphore
 
-Un sémaphore dans le Blender Game Engine pour créer une IA !
+Un sémaphore dans le Blender Game Engine pour créer une IA en python et en 50 lignes de code !
+
+Ce projet permet de débuter avec le "Deep Learning" à traduire par "Apprentissage Automatique".
 
 ### Contexte
 
@@ -35,7 +37,9 @@ Les images au format 40x40 en gris sont dans le fichier training_shot.tar.gz
 
 Le décompresser. Vous obtenez un dossier training_shot dans le dossier semaphore.
 
-Et passer directement à l'étape 2.
+Et passer directement à l'étape 2. En 5 mn, vous pouvez tout tester !
+
+Le script "d'intelligence" en 50 lignes de python est semaphore_ia.py dans le dossier semaphore_ia.
 
 ### La documentation sur ressources.labomedia.org
 
