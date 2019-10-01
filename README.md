@@ -2,9 +2,6 @@
 
 Un sémaphore dans le Blender Game Engine pour créer une IA !
 
-Un shot:
-<img src="/doc/shot_15_y.png" width="300" height="300">
-
 ### Contexte
 
 Réalisé avec:
